@@ -3,6 +3,7 @@ import com.example.HotelSOAP.server.model.*;
 import com.example.HotelSOAP.server.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceException;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 @WebService(
         endpointInterface = "com.example.HotelSOAP.server.service.HotelService"
 )
+@Service
 public class HotelServiceImpl implements HotelService {
 
   @Autowired
@@ -25,6 +27,9 @@ public class HotelServiceImpl implements HotelService {
 
   @Autowired
   private AvailabilityWindowRepository availabilityRepository;
+
+  @Autowired
+  private AgencyRepository agencyRepository;
 
   // one hotel per server, like before
   private final String hotelId;
@@ -39,6 +44,31 @@ public class HotelServiceImpl implements HotelService {
     return hotelRepository.findById(hotelId)
             .orElseThrow(() -> new WebServiceException("Unknown hotel " + hotelId));
   }
+
+  private double authenticateAgency(String agencyId, String password) {
+    if (agencyId == null || password == null) {
+      System.err.println("⚠️ Agency credentials missing");
+      return 1.0;
+    }
+
+    Optional<Agency> agency = agencyRepository.findByAgencyIdAndPassword(agencyId, password);
+
+    if (!agency.isPresent()) {
+      System.err.println("⚠️ Agency authentication failed for: " + agencyId);
+      return 1.0;
+    }
+
+    if (!agency.get().getHotel().getId().equals(hotelId)) {
+      System.err.println("⚠️ Agency " + agencyId + " is not a partner of hotel " + hotelId);
+      return 1.0;
+    }
+
+    System.out.println("✅ Agency authenticated: " + agency.get().getName() +
+            " (discount factor: " + agency.get().getDiscountFactor() + ")");
+
+    return agency.get().getDiscountFactor();
+  }
+
 
   private static boolean covers(LocalDate winStart, LocalDate winEnd,
                                 LocalDate reqStart, LocalDate reqEnd) {
@@ -60,13 +90,11 @@ public class HotelServiceImpl implements HotelService {
     return Math.max(n, 1);
   }
 
-  /* ========== SOAP operations ========== */
 
   @Override
   public List<AvailabilityOffer> checkAvailability(
           String agencyId, String password, String startISO, String endISO, int persons
   ) {
-    // we just check nulls, but we don't do any real auth.
     if (startISO == null || endISO == null)
       throw new WebServiceException("Missing dates");
 
@@ -79,8 +107,8 @@ public class HotelServiceImpl implements HotelService {
     }
     int nights = nightsBetween(startISO, endISO);
 
-    // No agency factor, plain price
-    double agencyFactor = 1.0;
+    // Authentifier l'agence et récupérer son facteur de réduction
+    double agencyFactor = authenticateAgency(agencyId, password);
 
     Hotel hotel = currentHotel();
     List<Room> rooms = roomRepository.findByHotel(hotel);
@@ -92,6 +120,7 @@ public class HotelServiceImpl implements HotelService {
       int left = unitsAvailableFor(r, s, e);
       if (left <= 0) continue;
 
+      // Appliquer le facteur de l'agence ET le facteur du type de chambre
       double perNight = r.getPricePerNight() * r.getType().factor() * agencyFactor;
       double total    = perNight * nights;
 
@@ -114,6 +143,12 @@ public class HotelServiceImpl implements HotelService {
 
     if (offerId == null)
       throw new WebServiceException("Missing offerId");
+
+    // Authentifier l'agence
+    double agencyFactor = authenticateAgency(agencyId, password);
+    if (agencyFactor == 1.0 && agencyId != null) {
+      return "ERROR: Agency authentication failed";
+    }
 
     Pattern p = Pattern.compile("^([A-Z0-9]+)-([A-Z0-9]+)-(\\d{4}-\\d{2}-\\d{2})-(\\d{4}-\\d{2}-\\d{2})$");
     Matcher m = p.matcher(offerId);
@@ -147,9 +182,8 @@ public class HotelServiceImpl implements HotelService {
     String ref = "CONF-" + hotel.getId() + "-" + room.getId() + "-" + (1000 + new Random().nextInt(9000));
 
     System.out.println("✅ Booking confirmed for " + hotel.getName()
-            + " (" + hotel.getId() + ") for client " + clientName + " → " + ref);
+            + " (" + hotel.getId() + ") for client " + clientName + " via agency " + agencyId + " → " + ref);
 
     return ref;
   }
 }
-

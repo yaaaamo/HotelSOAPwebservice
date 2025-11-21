@@ -20,13 +20,12 @@ public class DatabaseInitializer {
   @Bean
   CommandLineRunner initDatabase(HotelRepository hotelRepo,
                                  RoomRepository roomRepo,
-                                 AvailabilityWindowRepository winRepo) {
+                                 AvailabilityWindowRepository winRepo,
+                                 AgencyRepository agencyRepo) {
     return args -> {
-
 
       String hotelId   = System.getProperty("hotel.id",   "H1");
       String hotelName = System.getProperty("hotel.name", "Default Hotel");
-
 
       Address adr = new Address(
               "France",
@@ -38,16 +37,13 @@ public class DatabaseInitializer {
               3.8767
       );
 
-
       Hotel hotel = new Hotel(hotelId, hotelName, 4, adr);
       hotelRepo.save(hotel);
-
 
       Room r1 = new Room("R1", hotel, RoomType.DOUBLE, 2, 120, 5);
       Room r2 = new Room("R2", hotel, RoomType.FAMILY, 4, 180, 2);
       roomRepo.save(r1);
       roomRepo.save(r2);
-
 
       winRepo.save(new AvailabilityWindow(
               r1,
@@ -62,8 +58,31 @@ public class DatabaseInitializer {
               2
       ));
 
-      logger.info("✅ H2 initialized with hotel {} ({}) , rooms and availability",
-              hotelName, hotelId);
+      // Créer des agences partenaires avec différents facteurs de réduction
+
+      Agency agency1 = new Agency(
+              "AGENCY1",
+              "agency1",
+              "pass123",
+              "Travel Express",
+              0.90,
+              hotel
+      );
+
+      Agency agency2 = new Agency(
+              "AGENCY2",
+              "agency2",
+              "pass456",
+              "Voyage Plus",
+              0.85,
+              hotel
+      );
+
+      agencyRepo.save(agency1);
+      agencyRepo.save(agency2);
+
+      logger.info("✅ H2 initialized with hotel {} ({}), rooms, availability, and {} agencies",
+              hotelName, hotelId, agencyRepo.count());
     };
   }
 

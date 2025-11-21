@@ -9,7 +9,7 @@ import java.util.List;
 public class Hotel {
 
   @Id
-  private String id;    // "H1", "H2", ...
+  private String id;
 
   private String name;
 
@@ -75,4 +75,3 @@ public class Hotel {
     r.setHotel(this);
   }
 }
-
