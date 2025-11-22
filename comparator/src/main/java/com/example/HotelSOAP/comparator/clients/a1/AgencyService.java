@@ -28,7 +28,11 @@ public interface AgencyService {
     /**
      * 
      * @param persons
+     * @param city
      * @param endDate
+     * @param minPrice
+     * @param maxPrice
+     * @param stars
      * @param startDate
      * @return
      *     returns java.util.List<com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer>
@@ -39,10 +43,18 @@ public interface AgencyService {
     @ResponseWrapper(localName = "searchAvailabilityResponse", targetNamespace = "http://service.agency.HotelTP.example.com/", className = "com.example.HotelSOAP.comparator.clients.a1.SearchAvailabilityResponse")
     @Action(input = "http://service.agency.HotelTP.example.com/AgencyService/searchAvailabilityRequest", output = "http://service.agency.HotelTP.example.com/AgencyService/searchAvailabilityResponse")
     public List<AvailabilityOffer> searchAvailability(
+        @WebParam(name = "city", targetNamespace = "")
+        String city,
         @WebParam(name = "startDate", targetNamespace = "")
         String startDate,
         @WebParam(name = "endDate", targetNamespace = "")
         String endDate,
+        @WebParam(name = "minPrice", targetNamespace = "")
+        Double minPrice,
+        @WebParam(name = "maxPrice", targetNamespace = "")
+        Double maxPrice,
+        @WebParam(name = "stars", targetNamespace = "")
+        Integer stars,
         @WebParam(name = "persons", targetNamespace = "")
         int persons);
 

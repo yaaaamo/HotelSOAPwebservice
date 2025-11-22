@@ -20,6 +20,11 @@ public class AgencyServiceImpl implements AgencyService {
   @Value("${agency.password}")
   private String password;
 
+  @Value("${agency.name}")
+  private String agencyName;
+
+
+
   @Autowired
   @Qualifier("h1Client")
   private com.example.HotelTP.agency.clients.h1.HotelService h1Client;
@@ -40,109 +45,94 @@ public class AgencyServiceImpl implements AgencyService {
 
     List<AvailabilityOffer> allOffers = new ArrayList<>();
 
-    // Recherche dans H1
+    // ===== H1 =====
     try {
       List<com.example.HotelTP.agency.clients.h1.AvailabilityOffer> offersH1 =
               h1Client.checkAvailability(agencyId, password, startDate, endDate, persons);
 
       if (offersH1 != null) {
-        for (com.example.HotelTP.agency.clients.h1.AvailabilityOffer offer : offersH1) {
-          AvailabilityOffer mappedOffer = new AvailabilityOffer(
-                  offer.getOfferId(),
-                  "H1",
-                  offer.getRoomType().name(),
-                  offer.getBeds(),
-                  offer.getPrice(),
-                  startDate,
-                  endDate,
-                  "Grand Hotel H1",              // Nom de l'hôtel
-                  "France",                      // Pays
-                  city != null ? city : "Paris", // Ville
-                  "Avenue des Champs-Élysées",   // Rue
-                  "123",                         // Numéro
-                  "Centre-ville",                // Lieu-dit
-                  4                              // Étoiles
+        for (com.example.HotelTP.agency.clients.h1.AvailabilityOffer o : offersH1) {
+
+          AvailabilityOffer mapped = new AvailabilityOffer();
+          mapped.setOfferId(o.getOfferId());
+          mapped.setHotelId("H1");
+          mapped.setRoomType(
+                  o.getRoomType() != null ? o.getRoomType().name() : null
           );
-          allOffers.add(mappedOffer);
+          mapped.setBeds(o.getBeds());
+          mapped.setPrice(o.getPrice());
+          mapped.setStartDate(startDate);
+          mapped.setEndDate(endDate);
+
+          // hotel + address from server AvailabilityOffer
+          mapped.setHotelName(o.getHotelName());
+          mapped.setCountry(o.getCountry());
+          mapped.setCity(o.getCity());
+          mapped.setStreet(o.getStreet());
+          mapped.setNumber(o.getNumber());
+          mapped.setPlaceName(o.getPlaceName());
+          mapped.setLatitude(o.getLatitude());
+          mapped.setLongitude(o.getLongitude());
+          mapped.setStars(o.getStars());
+
+          // agency info from VM args
+          mapped.setAgencyId(agencyId);
+          mapped.setAgencyName(agencyName);
+
+          allOffers.add(mapped);
         }
       }
+
     } catch (Exception e) {
       System.err.println("⚠️ Erreur recherche H1: " + e.getMessage());
     }
 
-    // Recherche dans H2
+    // ===== H2 =====
     try {
       List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer> offersH2 =
               h2Client.checkAvailability(agencyId, password, startDate, endDate, persons);
 
       if (offersH2 != null) {
-        for (com.example.HotelTP.agency.clients.h2.AvailabilityOffer offer : offersH2) {
-          AvailabilityOffer mappedOffer = new AvailabilityOffer(
-                  offer.getOfferId(),
-                  "H2",
-                  offer.getRoomType().name(),
-                  offer.getBeds(),
-                  offer.getPrice(),
-                  startDate,
-                  endDate,
-                  "Hotel Boutique H2",           // Nom de l'hôtel
-                  "France",                      // Pays
-                  city != null ? city : "Paris", // Ville
-                  "Rue de Rivoli",               // Rue
-                  "456",                         // Numéro
-                  "Quartier du Louvre",          // Lieu-dit
-                  5                              // Étoiles
+        for (com.example.HotelTP.agency.clients.h2.AvailabilityOffer o : offersH2) {
+
+          AvailabilityOffer mapped = new AvailabilityOffer();
+          mapped.setOfferId(o.getOfferId());
+          mapped.setHotelId("H2");
+          mapped.setRoomType(
+                  o.getRoomType() != null ? o.getRoomType().name() : null
           );
-          allOffers.add(mappedOffer);
+          mapped.setBeds(o.getBeds());
+          mapped.setPrice(o.getPrice());
+          mapped.setStartDate(startDate);
+          mapped.setEndDate(endDate);
+
+          mapped.setHotelName(o.getHotelName());
+          mapped.setCountry(o.getCountry());
+          mapped.setCity(o.getCity());
+          mapped.setStreet(o.getStreet());
+          mapped.setNumber(o.getNumber());
+          mapped.setPlaceName(o.getPlaceName());
+          mapped.setLatitude(o.getLatitude());
+          mapped.setLongitude(o.getLongitude());
+          mapped.setStars(o.getStars());
+
+          mapped.setAgencyId(agencyId);
+          mapped.setAgencyName(agencyName);
+
+          allOffers.add(mapped);
         }
       }
+
     } catch (Exception e) {
       System.err.println("⚠️ Erreur recherche H2: " + e.getMessage());
     }
 
-    // Filtrage selon les critères
+    // if you want to debug:
+    System.out.println("Total mapped offers before filter = " + allOffers.size());
+
     return filterOffers(allOffers, city, minPrice, maxPrice, stars);
   }
 
-  /**
-   * Filtre les offres selon les critères de recherche
-   */
-  private List<AvailabilityOffer> filterOffers(
-          List<AvailabilityOffer> offers,
-          String city,
-          Double minPrice,
-          Double maxPrice,
-          Integer stars) {
-
-    return offers.stream()
-            .filter(offer -> {
-              // Filtre par ville
-              if (city != null && !city.isEmpty()) {
-                if (offer.getCity() == null ||
-                        !offer.getCity().toLowerCase().contains(city.toLowerCase())) {
-                  return false;
-                }
-              }
-
-              // Filtre par prix minimum
-              if (minPrice != null && offer.getPrice() < minPrice) {
-                return false;
-              }
-
-              // Filtre par prix maximum
-              if (maxPrice != null && offer.getPrice() > maxPrice) {
-                return false;
-              }
-
-              // Filtre par étoiles
-              if (stars != null && offer.getStars() != stars) {
-                return false;
-              }
-
-              return true;
-            })
-            .collect(Collectors.toList());
-  }
 
   @Override
   public String makeReservation(String offerId, String clientName, String clientEmail, String clientPhone) {
@@ -187,4 +177,43 @@ public class AgencyServiceImpl implements AgencyService {
 
     return null;
   }
+
+
+  private List<AvailabilityOffer> filterOffers(
+          List<AvailabilityOffer> offers,
+          String city,
+          Double minPrice,
+          Double maxPrice,
+          Integer stars) {
+
+    return offers.stream()
+            .filter(offer -> {
+              // Ville
+              if (city != null && !city.isEmpty()) {
+                if (offer.getCity() == null ||
+                        !offer.getCity().toLowerCase().contains(city.toLowerCase())) {
+                  return false;
+                }
+              }
+
+              // Prix minimum
+              if (minPrice != null && offer.getPrice() < minPrice) {
+                return false;
+              }
+
+              // Prix maximum
+              if (maxPrice != null && offer.getPrice() > maxPrice) {
+                return false;
+              }
+
+              // Étoiles
+              if (stars != null && offer.getStars() != stars) {
+                return false;
+              }
+
+              return true;
+            })
+            .collect(Collectors.toList());
+  }
+
 }

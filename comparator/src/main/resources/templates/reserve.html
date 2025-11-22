@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reserve</title>
+</head>
+<body>
+
+<h1>Reserve Offer</h1>
+
+<p>Offer ID: <span th:text="${offerId}"></span></p>
+<p>Agency: <span th:text="${agency}"></span></p>
+
+<form action="/reserve" method="post">
+    <input type="hidden" name="offerId" th:value="${offerId}">
+    <input type="hidden" name="agency" th:value="${agency}">
+
+    <label>Name: <input type="text" name="clientName"></label><br>
+    <label>Email: <input type="email" name="clientEmail"></label><br>
+    <label>Phone: <input type="text" name="clientPhone"></label><br>
+
+    <button type="submit">Confirm Reservation</button>
+</form>
+
+</body>
+</html>

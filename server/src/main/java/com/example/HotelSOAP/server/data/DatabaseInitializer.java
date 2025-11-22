@@ -27,14 +27,24 @@ public class DatabaseInitializer {
       String hotelId   = System.getProperty("hotel.id",   "H1");
       String hotelName = System.getProperty("hotel.name", "Default Hotel");
 
+      String country   = System.getProperty("hotel.address.country",   "France");
+      String city      = System.getProperty("hotel.address.city",      "Montpellier");
+      String street    = System.getProperty("hotel.address.street",    "Rue de la Loge");
+      String number    = System.getProperty("hotel.address.number",    "42");
+      String placeName = System.getProperty("hotel.address.placeName", "Écusson");
+      double latitude  = Double.parseDouble(
+              System.getProperty("hotel.address.latitude",  "43.6108"));
+      double longitude = Double.parseDouble(
+              System.getProperty("hotel.address.longitude", "3.8767"));
+
       Address adr = new Address(
-              "France",
-              "Montpellier",
-              "Rue de la Loge",
-              "42",
-              "Écusson",
-              43.6108,
-              3.8767
+              country,
+              city,
+              street,
+              number,
+              placeName,
+              latitude,
+              longitude
       );
 
       Hotel hotel = new Hotel(hotelId, hotelName, 4, adr);

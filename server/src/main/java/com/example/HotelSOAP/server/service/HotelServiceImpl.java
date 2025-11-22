@@ -118,11 +118,28 @@ public class HotelServiceImpl implements HotelService {
       o.setEnd(endISO);
       o.setPrice(total);
 
+      // 🔹 hotel info
+      o.setHotelName(hotel.getName());
+      o.setStars(hotel.getStars());
+
+      // 🔹 address info from embedded Address
+      Address addr = hotel.getAddress();
+      if (addr != null) {
+        o.setCountry(addr.getCountry());
+        o.setCity(addr.getCity());
+        o.setStreet(addr.getStreet());
+        o.setNumber(addr.getNumber());
+        o.setPlaceName(addr.getPlaceName());
+        o.setLatitude(addr.getLatitude());
+        o.setLongitude(addr.getLongitude());
+      }
+
       out.add(o);
     }
 
     return out;
   }
+
 
 
   @Override
@@ -131,7 +148,7 @@ public class HotelServiceImpl implements HotelService {
     if (offerId == null)
       throw new WebServiceException("Missing offerId");
 
-    // 🔐 Authentifier et récupérer l'agence
+
     Agency agency = authenticateAndGetAgency(agencyId, password);
 
     Pattern p = Pattern.compile(

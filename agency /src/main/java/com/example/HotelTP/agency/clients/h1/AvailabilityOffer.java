@@ -23,6 +23,15 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="start" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="end" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="price" type="{http://www.w3.org/2001/XMLSchema}double"/>
+ *         &lt;element name="hotelName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="stars" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="country" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="city" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="street" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="number" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="placeName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="latitude" type="{http://www.w3.org/2001/XMLSchema}double"/>
+ *         &lt;element name="longitude" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,7 +47,16 @@ import javax.xml.bind.annotation.XmlType;
     "beds",
     "start",
     "end",
-    "price"
+    "price",
+    "hotelName",
+    "stars",
+    "country",
+    "city",
+    "street",
+    "number",
+    "placeName",
+    "latitude",
+    "longitude"
 })
 public class AvailabilityOffer {
 
@@ -49,6 +67,15 @@ public class AvailabilityOffer {
     protected String start;
     protected String end;
     protected double price;
+    protected String hotelName;
+    protected int stars;
+    protected String country;
+    protected String city;
+    protected String street;
+    protected String number;
+    protected String placeName;
+    protected double latitude;
+    protected double longitude;
 
     /**
      * Gets the value of the offerId property.
@@ -176,6 +203,198 @@ public class AvailabilityOffer {
      */
     public void setPrice(double value) {
         this.price = value;
+    }
+
+    /**
+     * Gets the value of the hotelName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getHotelName() {
+        return hotelName;
+    }
+
+    /**
+     * Sets the value of the hotelName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setHotelName(String value) {
+        this.hotelName = value;
+    }
+
+    /**
+     * Gets the value of the stars property.
+     * 
+     */
+    public int getStars() {
+        return stars;
+    }
+
+    /**
+     * Sets the value of the stars property.
+     * 
+     */
+    public void setStars(int value) {
+        this.stars = value;
+    }
+
+    /**
+     * Gets the value of the country property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCountry() {
+        return country;
+    }
+
+    /**
+     * Sets the value of the country property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCountry(String value) {
+        this.country = value;
+    }
+
+    /**
+     * Gets the value of the city property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCity() {
+        return city;
+    }
+
+    /**
+     * Sets the value of the city property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCity(String value) {
+        this.city = value;
+    }
+
+    /**
+     * Gets the value of the street property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getStreet() {
+        return street;
+    }
+
+    /**
+     * Sets the value of the street property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setStreet(String value) {
+        this.street = value;
+    }
+
+    /**
+     * Gets the value of the number property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getNumber() {
+        return number;
+    }
+
+    /**
+     * Sets the value of the number property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setNumber(String value) {
+        this.number = value;
+    }
+
+    /**
+     * Gets the value of the placeName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPlaceName() {
+        return placeName;
+    }
+
+    /**
+     * Sets the value of the placeName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPlaceName(String value) {
+        this.placeName = value;
+    }
+
+    /**
+     * Gets the value of the latitude property.
+     * 
+     */
+    public double getLatitude() {
+        return latitude;
+    }
+
+    /**
+     * Sets the value of the latitude property.
+     * 
+     */
+    public void setLatitude(double value) {
+        this.latitude = value;
+    }
+
+    /**
+     * Gets the value of the longitude property.
+     * 
+     */
+    public double getLongitude() {
+        return longitude;
+    }
+
+    /**
+     * Sets the value of the longitude property.
+     * 
+     */
+    public void setLongitude(double value) {
+        this.longitude = value;
     }
 
 }
