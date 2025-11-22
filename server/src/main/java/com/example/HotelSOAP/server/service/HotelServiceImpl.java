@@ -45,29 +45,6 @@ public class HotelServiceImpl implements HotelService {
             .orElseThrow(() -> new WebServiceException("Unknown hotel " + hotelId));
   }
 
-  private double authenticateAgency(String agencyId, String password) {
-    if (agencyId == null || password == null) {
-      System.err.println("⚠️ Agency credentials missing");
-      return 1.0;
-    }
-
-    Optional<Agency> agency = agencyRepository.findByAgencyIdAndPassword(agencyId, password);
-
-    if (!agency.isPresent()) {
-      System.err.println("⚠️ Agency authentication failed for: " + agencyId);
-      return 1.0;
-    }
-
-    if (!agency.get().getHotel().getId().equals(hotelId)) {
-      System.err.println("⚠️ Agency " + agencyId + " is not a partner of hotel " + hotelId);
-      return 1.0;
-    }
-
-    System.out.println("✅ Agency authenticated: " + agency.get().getName() +
-            " (discount factor: " + agency.get().getDiscountFactor() + ")");
-
-    return agency.get().getDiscountFactor();
-  }
 
 
   private static boolean covers(LocalDate winStart, LocalDate winEnd,
@@ -93,10 +70,10 @@ public class HotelServiceImpl implements HotelService {
 
   @Override
   public List<AvailabilityOffer> checkAvailability(
-          String token, String startISO, String endISO, int persons
+          String agencyId, String password, String startISO, String endISO, int persons
   ) {
-    // 🔐 Validate token → retrieve agency
-    Agency agency = requireAgencyByToken(token);
+
+    Agency agency = authenticateAndGetAgency(agencyId, password);
     double agencyFactor = agency.getDiscountFactor();
 
     if (startISO == null || endISO == null)
@@ -118,24 +95,19 @@ public class HotelServiceImpl implements HotelService {
     List<AvailabilityOffer> out = new ArrayList<>();
 
     for (Room r : rooms) {
-
-      // must support required number of persons
       if (r.getBeds() < persons)
         continue;
 
-      // check if any units available
       int left = unitsAvailableFor(r, s, e);
       if (left <= 0)
         continue;
 
-      // Calculate pricing
       double perNight = r.getPricePerNight()
               * r.getType().factor()
               * agencyFactor;
 
       double total = perNight * nights;
 
-      // Build offer
       AvailabilityOffer o = new AvailabilityOffer();
       o.setOfferId(
               hotel.getId() + "-" + r.getId() + "-" + startISO + "-" + endISO
@@ -154,13 +126,13 @@ public class HotelServiceImpl implements HotelService {
 
 
   @Override
-  public String book(String token, String offerId, Client mainGuest) {
+  public String book(String agencyId, String password, String offerId, Client mainGuest) {
 
     if (offerId == null)
       throw new WebServiceException("Missing offerId");
 
-    // 🔐 Validate token → retrieve agency
-    Agency agency = requireAgencyByToken(token);
+    // 🔐 Authentifier et récupérer l'agence
+    Agency agency = authenticateAndGetAgency(agencyId, password);
 
     Pattern p = Pattern.compile(
             "^([A-Z0-9]+)-([A-Z0-9]+)-(\\d{4}-\\d{2}-\\d{2})-(\\d{4}-\\d{2}-\\d{2})$"
@@ -210,46 +182,27 @@ public class HotelServiceImpl implements HotelService {
     return ref;
   }
 
-
-  private Agency requireAgencyByToken(String token) {
-    if (token == null) {
-      throw new WebServiceException("Missing token");
-    }
-
-    Agency agency = agencyRepository.findByAuthToken(token)
-            .orElseThrow(() -> new WebServiceException("Invalid token"));
-
-    if (!agency.getHotel().getId().equals(hotelId)) {
-      throw new WebServiceException("Token not valid for this hotel");
-    }
-
-    return agency;
-  }
-
-  @Override
-  public String login(String agencyId, String password) {
+  /**
+   * Authentifie l'agence et retourne l'objet Agency
+   */
+  private Agency authenticateAndGetAgency(String agencyId, String password) {
     if (agencyId == null || password == null) {
       throw new WebServiceException("Missing credentials");
     }
 
-    Agency agency = agencyRepository
-            .findByAgencyIdAndPassword(agencyId, password)
+    Agency agency = agencyRepository.findByAgencyIdAndPassword(agencyId, password)
             .orElseThrow(() -> new WebServiceException("Bad credentials"));
 
-    // Vérifier que l'agence est partenaire de cet hôtel
     if (!agency.getHotel().getId().equals(hotelId)) {
       throw new WebServiceException("Agency not partner of this hotel");
     }
 
-    // Générer un token
-    String token = java.util.UUID.randomUUID().toString();
-    agency.setAuthToken(token);
-    agencyRepository.save(agency);
+    System.out.println("✅ Agency authenticated: " + agency.getName() +
+            " (discount factor: " + agency.getDiscountFactor() + ")");
 
-    System.out.println("✅ Login success for agency " + agency.getAgencyId()
-            + " on hotel " + hotelId + " → token=" + token);
-
-    return token;
+    return agency;
   }
+
+
 
 }

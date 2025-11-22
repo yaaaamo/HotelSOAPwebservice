@@ -10,7 +10,6 @@ public class Agency {
   private String login;
   private String password;
   private String name;
-  private String authToken;
 
   // Facteur de réduction appliqué par l'hôtel pour cette agence
   private double discountFactor;
@@ -31,9 +30,6 @@ public class Agency {
     this.discountFactor = discountFactor;
     this.hotel = hotel;
   }
-
-  public String getAuthToken() { return authToken; }
-  public void setAuthToken(String authToken) { this.authToken = authToken; }
 
   public String getAgencyId() {
     return agencyId;

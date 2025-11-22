@@ -18,7 +18,7 @@ import javax.xml.ws.ResponseWrapper;
  * Generated source version: 2.2
  * 
  */
-@WebService(name = "HotelService", targetNamespace = "http://hotel.example.com/soap")
+@WebService(name = "HotelService", targetNamespace = "http://service.server.HotelSOAP.example.com/")
 @XmlSeeAlso({
     ObjectFactory.class
 })
@@ -27,65 +27,53 @@ public interface HotelService {
 
     /**
      * 
+     * @param password
+     * @param offerId
+     * @param client
+     * @param agencyId
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "book", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.Book")
+    @ResponseWrapper(localName = "bookResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.BookResponse")
+    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/bookRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/bookResponse")
+    public String book(
+        @WebParam(name = "agencyId", targetNamespace = "")
+        String agencyId,
+        @WebParam(name = "password", targetNamespace = "")
+        String password,
+        @WebParam(name = "offerId", targetNamespace = "")
+        String offerId,
+        @WebParam(name = "client", targetNamespace = "")
+        Client client);
+
+    /**
+     * 
      * @param persons
-     * @param start
-     * @param end
-     * @param token
+     * @param password
+     * @param endDate
+     * @param agencyId
+     * @param startDate
      * @return
      *     returns java.util.List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "checkAvailability", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h2.CheckAvailability")
-    @ResponseWrapper(localName = "checkAvailabilityResponse", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h2.CheckAvailabilityResponse")
-    @Action(input = "http://hotel.example.com/soap/HotelService/checkAvailabilityRequest", output = "http://hotel.example.com/soap/HotelService/checkAvailabilityResponse")
+    @RequestWrapper(localName = "checkAvailability", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.CheckAvailability")
+    @ResponseWrapper(localName = "checkAvailabilityResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.CheckAvailabilityResponse")
+    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/checkAvailabilityRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/checkAvailabilityResponse")
     public List<AvailabilityOffer> checkAvailability(
-        @WebParam(name = "token", targetNamespace = "")
-        String token,
-        @WebParam(name = "start", targetNamespace = "")
-        String start,
-        @WebParam(name = "end", targetNamespace = "")
-        String end,
+        @WebParam(name = "agencyId", targetNamespace = "")
+        String agencyId,
+        @WebParam(name = "password", targetNamespace = "")
+        String password,
+        @WebParam(name = "startDate", targetNamespace = "")
+        String startDate,
+        @WebParam(name = "endDate", targetNamespace = "")
+        String endDate,
         @WebParam(name = "persons", targetNamespace = "")
         int persons);
-
-    /**
-     * 
-     * @param mainGuest
-     * @param offerId
-     * @param token
-     * @return
-     *     returns java.lang.String
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "book", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h2.Book")
-    @ResponseWrapper(localName = "bookResponse", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h2.BookResponse")
-    @Action(input = "http://hotel.example.com/soap/HotelService/bookRequest", output = "http://hotel.example.com/soap/HotelService/bookResponse")
-    public String book(
-        @WebParam(name = "token", targetNamespace = "")
-        String token,
-        @WebParam(name = "offerId", targetNamespace = "")
-        String offerId,
-        @WebParam(name = "mainGuest", targetNamespace = "")
-        Client mainGuest);
-
-    /**
-     * 
-     * @param arg1
-     * @param arg0
-     * @return
-     *     returns java.lang.String
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "login", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h2.Login")
-    @ResponseWrapper(localName = "loginResponse", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h2.LoginResponse")
-    @Action(input = "http://hotel.example.com/soap/HotelService/loginRequest", output = "http://hotel.example.com/soap/HotelService/loginResponse")
-    public String login(
-        @WebParam(name = "arg0", targetNamespace = "")
-        String arg0,
-        @WebParam(name = "arg1", targetNamespace = "")
-        String arg1);
 
 }

@@ -9,7 +9,7 @@ import javax.xml.ws.Endpoint;
 @Configuration
 public class HotelServicePublisher implements CommandLineRunner {
 
-  private final HotelService hotelService;
+  private HotelService hotelService;
 
   public HotelServicePublisher(HotelService hotelService) {
     this.hotelService = hotelService;
@@ -17,7 +17,7 @@ public class HotelServicePublisher implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    // ws.port VM option'dan gelsin, default 8080 olsun
+    //default 8080
     String wsPort = System.getProperty("ws.port", "8080");
     String serviceUri = "http://localhost:" + wsPort + "/hotelservice";
 

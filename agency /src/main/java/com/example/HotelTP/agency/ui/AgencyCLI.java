@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,10 +27,6 @@ public class AgencyCLI implements CommandLineRunner {
   @Value("${agency.name}")
   private String agencyName;
 
-  // Tokens retournés par les hôtels après login()
-  private String tokenH1;
-  private String tokenH2;
-
   // Injection des proxies SOAP comme beans Spring
   @Autowired
   @Qualifier("h1Client")
@@ -50,23 +45,6 @@ public class AgencyCLI implements CommandLineRunner {
     System.out.println("    🏢 Bienvenue à " + agencyName);
     System.out.println("    ID: " + agencyId + " | Login: " + login);
     System.out.println(repeat("=", 60) + "\n");
-
-    // Login sur chaque hôtel pour obtenir un token
-    try {
-      tokenH1 = h1Client.login(agencyId, password);
-      System.out.println("🔑 Token H1 obtenu: " + tokenH1);
-    } catch (Exception e) {
-      System.out.println("⚠️  Impossible de se connecter à l'hôtel H1: " + e.getMessage());
-      tokenH1 = null;
-    }
-
-    try {
-      tokenH2 = h2Client.login(agencyId, password);
-      System.out.println("🔑 Token H2 obtenu: " + tokenH2);
-    } catch (Exception e) {
-      System.out.println("⚠️  Impossible de se connecter à l'hôtel H2: " + e.getMessage());
-      tokenH2 = null;
-    }
 
     while (running) {
       displayMenu();
@@ -127,31 +105,29 @@ public class AgencyCLI implements CommandLineRunner {
 
       // Recherche dans H1
       System.out.println("📍 Hotel H1 (localhost:8080):");
-      if (tokenH1 == null) {
-        System.out.println("     Non connecté à H1 (token manquant).");
-      } else {
+      try {
         List<com.example.HotelTP.agency.clients.h1.AvailabilityOffer> offersH1 =
-                h1Client.checkAvailability(tokenH1, startDate, endDate, persons);
+                h1Client.checkAvailability(agencyId, password, startDate, endDate, persons);
 
         if (offersH1 == null || offersH1.isEmpty()) {
           System.out.println("   Aucune disponibilité");
         } else {
           for (com.example.HotelTP.agency.clients.h1.AvailabilityOffer offer : offersH1) {
-            System.out.println("    " + offer.getRoomType() +
+            System.out.println("    ✅ " + offer.getRoomType() +
                     " - " + offer.getBeds() + " lits - " +
                     offer.getPrice() + "€");
             System.out.println("      Offre: " + offer.getOfferId());
           }
         }
+      } catch (Exception e) {
+        System.out.println("   ⚠️  Erreur: " + e.getMessage());
       }
 
       // Recherche dans H2
       System.out.println("\n📍 Hotel H2 (localhost:8083):");
-      if (tokenH2 == null) {
-        System.out.println("   ️  Non connecté à H2 (token manquant).");
-      } else {
+      try {
         List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer> offersH2 =
-                h2Client.checkAvailability(tokenH2, startDate, endDate, persons);
+                h2Client.checkAvailability(agencyId, password, startDate, endDate, persons);
 
         if (offersH2 == null || offersH2.isEmpty()) {
           System.out.println("   Aucune disponibilité");
@@ -163,11 +139,12 @@ public class AgencyCLI implements CommandLineRunner {
             System.out.println("      Offre: " + offer.getOfferId());
           }
         }
+      } catch (Exception e) {
+        System.out.println("   ⚠️  Erreur: " + e.getMessage());
       }
 
     } catch (Exception e) {
       System.out.println("⚠️  Erreur : " + e.getMessage());
-      e.printStackTrace();
     }
   }
 
@@ -195,29 +172,21 @@ public class AgencyCLI implements CommandLineRunner {
       System.out.println("\n🔍 Recherche en cours...\n");
 
       if ("1".equals(hotelChoice)) {
-        if (tokenH1 == null) {
-          System.out.println("  Non connecté à H1 (token manquant).");
-          return;
-        }
         List<com.example.HotelTP.agency.clients.h1.AvailabilityOffer> offers =
-                h1Client.checkAvailability(tokenH1, startDate, endDate, persons);
+                h1Client.checkAvailability(agencyId, password, startDate, endDate, persons);
         displayOffersH1(offers);
 
       } else if ("2".equals(hotelChoice)) {
-        if (tokenH2 == null) {
-          System.out.println("  Non connecté à H2 (token manquant).");
-          return;
-        }
         List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer> offers =
-                h2Client.checkAvailability(tokenH2, startDate, endDate, persons);
+                h2Client.checkAvailability(agencyId, password, startDate, endDate, persons);
         displayOffersH2(offers);
 
       } else {
-        System.out.println("️  Choix invalide.");
+        System.out.println("⚠️  Choix invalide.");
       }
 
     } catch (Exception e) {
-      System.out.println("️  Erreur : " + e.getMessage());
+      System.out.println("⚠️  Erreur : " + e.getMessage());
       e.printStackTrace();
     }
   }
@@ -246,41 +215,30 @@ public class AgencyCLI implements CommandLineRunner {
       System.out.print("Téléphone du client : ");
       String clientPhone = scanner.nextLine().trim();
 
-      System.out.println("\n Réservation en cours...\n");
+      System.out.println("\n📝 Réservation en cours...\n");
 
       String confirmation;
 
       if ("1".equals(hotelChoice)) {
-        if (tokenH1 == null) {
-          System.out.println("  Non connecté à H1 (token manquant).");
-          return;
-        }
-
         com.example.HotelTP.agency.clients.h1.Client client =
                 new com.example.HotelTP.agency.clients.h1.Client();
         client.setName(clientName);
         client.setEmail(clientEmail);
         client.setPhone(clientPhone);
 
-        // book(token, offerId, client)
-        confirmation = h1Client.book(tokenH1, offerId, client);
+        confirmation = h1Client.book(agencyId, password, offerId, client);
 
       } else if ("2".equals(hotelChoice)) {
-        if (tokenH2 == null) {
-          System.out.println("️  Non connecté à H2 (token manquant).");
-          return;
-        }
-
         com.example.HotelTP.agency.clients.h2.Client client =
                 new com.example.HotelTP.agency.clients.h2.Client();
         client.setName(clientName);
         client.setEmail(clientEmail);
         client.setPhone(clientPhone);
 
-        confirmation = h2Client.book(tokenH2, offerId, client);
+        confirmation = h2Client.book(agencyId, password, offerId, client);
 
       } else {
-        System.out.println("  Choix invalide.");
+        System.out.println("⚠️  Choix invalide.");
         return;
       }
 
@@ -307,7 +265,7 @@ public class AgencyCLI implements CommandLineRunner {
 
   private void displayOffersH1(List<com.example.HotelTP.agency.clients.h1.AvailabilityOffer> offers) {
     if (offers == null || offers.isEmpty()) {
-      System.out.println(" Aucune disponibilité trouvée.");
+      System.out.println("❌ Aucune disponibilité trouvée.");
     } else {
       System.out.println("✅ " + offers.size() + " offre(s) disponible(s):\n");
       int index = 1;
@@ -322,7 +280,7 @@ public class AgencyCLI implements CommandLineRunner {
 
   private void displayOffersH2(List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer> offers) {
     if (offers == null || offers.isEmpty()) {
-      System.out.println(" Aucune disponibilité trouvée.");
+      System.out.println("❌ Aucune disponibilité trouvée.");
     } else {
       System.out.println("✅ " + offers.size() + " offre(s) disponible(s):\n");
       int index = 1;

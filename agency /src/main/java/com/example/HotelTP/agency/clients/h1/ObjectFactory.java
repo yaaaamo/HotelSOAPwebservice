@@ -24,26 +24,16 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Book_QNAME = new QName("http://hotel.example.com/soap", "book");
-    private final static QName _BookResponse_QNAME = new QName("http://hotel.example.com/soap", "bookResponse");
-    private final static QName _LoginResponse_QNAME = new QName("http://hotel.example.com/soap", "loginResponse");
-    private final static QName _Login_QNAME = new QName("http://hotel.example.com/soap", "login");
-    private final static QName _CheckAvailability_QNAME = new QName("http://hotel.example.com/soap", "checkAvailability");
-    private final static QName _CheckAvailabilityResponse_QNAME = new QName("http://hotel.example.com/soap", "checkAvailabilityResponse");
+    private final static QName _BookResponse_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "bookResponse");
+    private final static QName _Book_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "book");
+    private final static QName _CheckAvailabilityResponse_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "checkAvailabilityResponse");
+    private final static QName _CheckAvailability_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "checkAvailability");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.example.HotelTP.agency.clients.h1
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link LoginResponse }
-     * 
-     */
-    public LoginResponse createLoginResponse() {
-        return new LoginResponse();
     }
 
     /**
@@ -79,14 +69,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Login }
-     * 
-     */
-    public Login createLogin() {
-        return new Login();
-    }
-
-    /**
      * Create an instance of {@link AvailabilityOffer }
      * 
      */
@@ -103,57 +85,39 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Book }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "book")
-    public JAXBElement<Book> createBook(Book value) {
-        return new JAXBElement<Book>(_Book_QNAME, Book.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link BookResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "bookResponse")
+    @XmlElementDecl(namespace = "http://service.server.HotelSOAP.example.com/", name = "bookResponse")
     public JAXBElement<BookResponse> createBookResponse(BookResponse value) {
         return new JAXBElement<BookResponse>(_BookResponse_QNAME, BookResponse.class, null, value);
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link LoginResponse }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link Book }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "loginResponse")
-    public JAXBElement<LoginResponse> createLoginResponse(LoginResponse value) {
-        return new JAXBElement<LoginResponse>(_LoginResponse_QNAME, LoginResponse.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Login }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "login")
-    public JAXBElement<Login> createLogin(Login value) {
-        return new JAXBElement<Login>(_Login_QNAME, Login.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CheckAvailability }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "checkAvailability")
-    public JAXBElement<CheckAvailability> createCheckAvailability(CheckAvailability value) {
-        return new JAXBElement<CheckAvailability>(_CheckAvailability_QNAME, CheckAvailability.class, null, value);
+    @XmlElementDecl(namespace = "http://service.server.HotelSOAP.example.com/", name = "book")
+    public JAXBElement<Book> createBook(Book value) {
+        return new JAXBElement<Book>(_Book_QNAME, Book.class, null, value);
     }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link CheckAvailabilityResponse }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "checkAvailabilityResponse")
+    @XmlElementDecl(namespace = "http://service.server.HotelSOAP.example.com/", name = "checkAvailabilityResponse")
     public JAXBElement<CheckAvailabilityResponse> createCheckAvailabilityResponse(CheckAvailabilityResponse value) {
         return new JAXBElement<CheckAvailabilityResponse>(_CheckAvailabilityResponse_QNAME, CheckAvailabilityResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link CheckAvailability }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.server.HotelSOAP.example.com/", name = "checkAvailability")
+    public JAXBElement<CheckAvailability> createCheckAvailability(CheckAvailability value) {
+        return new JAXBElement<CheckAvailability>(_CheckAvailability_QNAME, CheckAvailability.class, null, value);
     }
 
 }

@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="offerId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="roomType" type="{http://hotel.example.com/soap}RoomType" minOccurs="0"/>
+ *         &lt;element name="roomType" type="{http://service.server.HotelSOAP.example.com/}RoomType" minOccurs="0"/>
  *         &lt;element name="beds" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="start" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="end" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>

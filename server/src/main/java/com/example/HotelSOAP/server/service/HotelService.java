@@ -8,30 +8,23 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import java.util.List;
 
-@WebService(
-        targetNamespace = "http://hotel.example.com/soap"
-)
+@WebService
 public interface HotelService {
 
-  // Service web 1 : disponibilités par agence
   @WebMethod
   List<AvailabilityOffer> checkAvailability(
-          @WebParam(name="token") String token,
-          @WebParam(name="start") String startISO,
-          @WebParam(name="end") String endISO,
-          @WebParam(name="persons") int persons
+          @WebParam(name = "agencyId") String agencyId,
+          @WebParam(name = "password") String password,
+          @WebParam(name = "startDate") String startDate,
+          @WebParam(name = "endDate") String endDate,
+          @WebParam(name = "persons") int persons
   );
 
-
-
-  // Service web 2 : réservation via agence
   @WebMethod
   String book(
-          @WebParam(name="token") String token,
-          @WebParam(name="offerId")  String offerId,
-          @WebParam(name="mainGuest") Client client
+          @WebParam(name = "agencyId") String agencyId,
+          @WebParam(name = "password") String password,
+          @WebParam(name = "offerId") String offerId,
+          @WebParam(name = "client") Client client
   );
-
-  @WebMethod
-  String login(String agencyId, String password);
 }
