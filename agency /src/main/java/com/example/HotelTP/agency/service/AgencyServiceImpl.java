@@ -43,6 +43,7 @@ public class AgencyServiceImpl implements AgencyService {
           Integer stars,
           int persons) {
 
+
     List<AvailabilityOffer> allOffers = new ArrayList<>();
 
     // ===== H1 =====
@@ -74,6 +75,10 @@ public class AgencyServiceImpl implements AgencyService {
           mapped.setLatitude(o.getLatitude());
           mapped.setLongitude(o.getLongitude());
           mapped.setStars(o.getStars());
+          mapped.setImageUrl(o.getImageUrl());
+
+
+
 
           // agency info from VM args
           mapped.setAgencyId(agencyId);
@@ -115,6 +120,9 @@ public class AgencyServiceImpl implements AgencyService {
           mapped.setLatitude(o.getLatitude());
           mapped.setLongitude(o.getLongitude());
           mapped.setStars(o.getStars());
+          mapped.setImageUrl(o.getImageUrl());
+
+
 
           mapped.setAgencyId(agencyId);
           mapped.setAgencyName(agencyName);

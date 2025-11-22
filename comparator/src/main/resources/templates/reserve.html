@@ -2,25 +2,42 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Reserve</title>
+    <title>Réserver une offre</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        label { display: block; margin: 8px 0 4px; }
+        input { width: 100%; padding: 6px; box-sizing: border-box; }
+        button { margin-top: 12px; padding: 8px 16px; }
+        .meta { margin-bottom: 12px; font-size: 0.95em; color: #555; }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h1>Réservation</h1>
 
-<h1>Reserve Offer</h1>
+    <div class="meta">
+        <p>Vous allez réserver l'offre :</p>
+        <p><strong th:text="${offerId}">OFFER-ID</strong></p>
+        <p>Agence ID : <strong th:text="${agencyId}">AGENCY1</strong></p>
+    </div>
 
-<p>Offer ID: <span th:text="${offerId}"></span></p>
-<p>Agency: <span th:text="${agency}"></span></p>
+    <form action="/reserve" method="post">
+        <!-- on renvoie offerId + agencyId au POST -->
+        <input type="hidden" name="offerId" th:value="${offerId}">
+        <input type="hidden" name="agencyId" th:value="${agencyId}">
 
-<form action="/reserve" method="post">
-    <input type="hidden" name="offerId" th:value="${offerId}">
-    <input type="hidden" name="agency" th:value="${agency}">
+        <label>Nom complet</label>
+        <input type="text" name="clientName" required>
 
-    <label>Name: <input type="text" name="clientName"></label><br>
-    <label>Email: <input type="email" name="clientEmail"></label><br>
-    <label>Phone: <input type="text" name="clientPhone"></label><br>
+        <label>Email</label>
+        <input type="email" name="clientEmail" required>
 
-    <button type="submit">Confirm Reservation</button>
-</form>
+        <label>Téléphone</label>
+        <input type="text" name="clientPhone" required>
 
+        <button type="submit">Confirmer la réservation</button>
+    </form>
+</div>
 </body>
 </html>

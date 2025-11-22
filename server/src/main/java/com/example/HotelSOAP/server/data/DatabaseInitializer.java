@@ -47,7 +47,17 @@ public class DatabaseInitializer {
               longitude
       );
 
-      Hotel hotel = new Hotel(hotelId, hotelName, 4, adr);
+      String imageUrl;
+
+      if (hotelId.equals("H1")) {
+        imageUrl = "http://localhost:8081/images/h1.jpg";
+      } else if (hotelId.equals("H2")) {
+        imageUrl = "http://localhost:8082/images/h2.jpg";
+      } else {
+        imageUrl = "/images/default.jpg";
+      }
+
+      Hotel hotel = new Hotel(hotelId, hotelName, 4, adr, imageUrl);
       hotelRepo.save(hotel);
 
       Room r1 = new Room("R1", hotel, RoomType.DOUBLE, 2, 120, 5);

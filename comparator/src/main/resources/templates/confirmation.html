@@ -2,25 +2,35 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Reservation Confirmation</title>
+    <title>Confirmation de réservation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h1>Confirmation</h1>
 
-<h1>Reservation Status</h1>
+    <div th:if="${success}" class="success">
+        <p>Votre réservation a été confirmée ✅</p>
+        <p>Code de confirmation :
+            <strong th:text="${confirmationCode}">CONF-XXXX</strong>
+        </p>
+        <p>
+            Au nom de :
+            <strong th:text="${clientName}">Nom</strong>
+            (<span th:text="${clientEmail}">email</span>)
+        </p>
+    </div>
 
-<div th:if="${success}">
-    <h2 style="color:green;">Reservation Confirmed!</h2>
-    <p>Confirmation Code: <span th:text="${confirmationCode}"></span></p>
-    <p>Name: <span th:text="${clientName}"></span></p>
-    <p>Email: <span th:text="${clientEmail}"></span></p>
+    <div th:if="${error}" class="error">
+        <p th:text="${error}">Une erreur s'est produite.</p>
+    </div>
+
+    <p><a href="/search">⟵ Retour à la recherche</a></p>
 </div>
-
-<div th:if="${error}">
-    <h2 style="color:red;">Error</h2>
-    <p th:text="${error}"></p>
-</div>
-
-<a href="/">Back to Home</a>
-
 </body>
 </html>

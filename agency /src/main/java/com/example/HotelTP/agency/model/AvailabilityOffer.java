@@ -21,6 +21,7 @@ public class AvailabilityOffer {
   private double latitude;
   private double longitude;
   private int stars;
+  private String imageUrl;
 
 
   public AvailabilityOffer() {}
@@ -34,6 +35,14 @@ public class AvailabilityOffer {
     this.price = price;
     this.startDate = startDate;
     this.endDate = endDate;
+  }
+
+  public String getImageUrl() {
+    return imageUrl;
+  }
+
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
   }
 
   public String getAgencyId() { return agencyId; }

@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="placeName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="latitude" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="longitude" type="{http://www.w3.org/2001/XMLSchema}double"/>
+ *         &lt;element name="imageUrl" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -56,7 +57,8 @@ import javax.xml.bind.annotation.XmlType;
     "number",
     "placeName",
     "latitude",
-    "longitude"
+    "longitude",
+    "imageUrl"
 })
 public class AvailabilityOffer {
 
@@ -76,6 +78,7 @@ public class AvailabilityOffer {
     protected String placeName;
     protected double latitude;
     protected double longitude;
+    protected String imageUrl;
 
     /**
      * Gets the value of the offerId property.
@@ -395,6 +398,30 @@ public class AvailabilityOffer {
      */
     public void setLongitude(double value) {
         this.longitude = value;
+    }
+
+    /**
+     * Gets the value of the imageUrl property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    /**
+     * Sets the value of the imageUrl property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setImageUrl(String value) {
+        this.imageUrl = value;
     }
 
 }

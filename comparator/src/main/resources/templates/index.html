@@ -2,23 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Comparator Home</title>
+    <title>Hotel Comparator - Home</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        label { display: block; margin: 8px 0 4px; }
+        input { width: 100%; padding: 6px; box-sizing: border-box; }
+        button { margin-top: 12px; padding: 8px 16px; }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h1>Hotel Comparator</h1>
+    <p>Compare les offres de nos agences partenaires.</p>
 
-<h1>Hotel Comparator</h1>
+    <form action="/search" method="get">
+        <label>Ville</label>
+        <input type="text" name="city" placeholder="Paris, Montpellier..." required>
 
-<form action="/search" method="get">
-    <label>City: <input type="text" name="city"></label><br>
-    <label>Start Date: <input type="date" name="startDate"></label><br>
-    <label>End Date: <input type="date" name="endDate"></label><br>
-    <label>Persons: <input type="number" name="persons" value="1"></label><br>
-    <label>Min Price: <input type="number" name="minPrice"></label><br>
-    <label>Max Price: <input type="number" name="maxPrice"></label><br>
-    <label>Stars: <input type="number" name="stars"></label><br>
+        <label>Date d'arrivée</label>
+        <input type="date" name="startDate" required>
 
-    <button type="submit">Compare</button>
-</form>
+        <label>Date de départ</label>
+        <input type="date" name="endDate" required>
 
+        <label>Nombre de personnes</label>
+        <input type="number" name="persons" value="1" min="1">
+
+        <label>Prix minimum</label>
+        <input type="number" name="minPrice" step="1">
+
+        <label>Prix maximum</label>
+        <input type="number" name="maxPrice" step="1">
+
+        <label>Nombre d'étoiles</label>
+        <input type="number" name="stars" min="1" max="5">
+
+        <button type="submit">Rechercher</button>
+    </form>
+</div>
 </body>
 </html>

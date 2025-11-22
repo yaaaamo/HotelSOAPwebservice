@@ -46,8 +46,17 @@
             <p th:text="${offer.price}">Price</p>
             <p th:text="${offer.fullAddress}">Address</p>
             <p th:text="${offer.starsDisplay}">★★★</p>
+            <img th:if="${offer.imageUrl != null}"
+                 th:src="${offer.imageUrl}"
+                 width="260" height="180"
+                 style="border-radius:10px;">
 
-            <a th:href="@{/reserve(offerId=${offer.offerId})}">Reserve</a>
+
+
+
+
+
+        <a th:href="@{/reserve(offerId=${offer.offerId})}">Reserve</a>
         </p>
 
         <hr>

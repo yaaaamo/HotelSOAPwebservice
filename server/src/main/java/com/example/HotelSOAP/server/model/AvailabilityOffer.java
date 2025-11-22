@@ -24,7 +24,14 @@ public class AvailabilityOffer {
   private double latitude;
   private double longitude;
 
+  private String imageUrl;
+
+
+
   public AvailabilityOffer() {}
+
+  public String getImageUrl() { return imageUrl; }
+  public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
   public String getHotelName() {
     return hotelName;

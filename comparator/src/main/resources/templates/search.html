@@ -2,62 +2,224 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Comparison Results</title>
+    <title>Hotel Comparator - Résultats</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        h1 { margin-bottom: 10px; }
+        .search-form {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .search-form label { display: block; margin: 6px 0 2px; }
+        .search-form input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 6px;
+            box-sizing: border-box;
+        }
+        .search-form button {
+            margin-top: 8px;
+            padding: 8px 16px;
+        }
+
+        .message { margin: 10px 0; }
+        .message.error { color: red; }
+        .message.info { color: orange; }
+
+        .card {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            margin: 12px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .card img {
+            width: 260px;
+            height: 180px;
+            object-fit: cover;
+        }
+        .card-body {
+            flex: 1;
+            padding: 10px 15px;
+        }
+        .card-header-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hotel-name {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .agency-name {
+            font-size: 0.95em;
+            color: #555;
+        }
+        .stars {
+            color: #ffcc00;
+        }
+        .card-footer {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px 15px;
+            min-width: 200px;
+            border-left: 1px solid #eee;
+            background: #f9fff7;
+        }
+        .price-main {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .reserve-link a {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            background: #28a745;
+            color: #fff;
+            font-weight: bold;
+        }
+        .reserve-link a:hover {
+            background: #218838;
+        }
+        .room-line {
+            margin-top: 4px;
+            color: #555;
+        }
+        .address-line {
+            margin-top: 4px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .meta-line {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
 
-<h1>Comparison Results</h1>
+    <h1>Comparer les offres d'hôtels</h1>
 
-<div th:if="${error}">
-    <p th:text="${error}" style="color:red;"></p>
-</div>
+    <!-- Messages d'erreur / info -->
+    <div th:if="${error}" class="message error" th:text="${error}"></div>
+    <div th:if="${message}" class="message info" th:text="${message}"></div>
 
-<div th:if="${message}">
-    <p th:text="${message}" style="color:orange;"></p>
-</div>
+    <!-- Formulaire de recherche -->
+    <div class="search-form">
+        <form action="/search" method="get">
+            <label>Ville</label>
+            <input type="text" name="city" th:value="${city}" placeholder="Paris, Montpellier..." required>
 
-<!-- Search form -->
-<form action="/search" method="get">
-    <label>City: <input type="text" name="city" th:value="${city}"></label><br>
-    <label>Start: <input type="date" name="startDate" th:value="${startDate}"></label><br>
-    <label>End: <input type="date" name="endDate" th:value="${endDate}"></label><br>
-    <label>Persons: <input type="number" name="persons" th:value="${persons}"></label><br>
-    <label>Min Price: <input type="number" name="minPrice" th:value="${minPrice}"></label><br>
-    <label>Max Price: <input type="number" name="maxPrice" th:value="${maxPrice}"></label><br>
-    <label>Stars: <input type="number" name="stars" th:value="${stars}"></label><br>
+            <label>Date d'arrivée</label>
+            <input type="date" name="startDate" th:value="${startDate}" required>
 
-    <button type="submit">Compare</button>
-</form>
+            <label>Date de départ</label>
+            <input type="date" name="endDate" th:value="${endDate}" required>
 
-<hr>
+            <label>Nombre de personnes</label>
+            <input type="number" name="persons" th:value="${persons}" min="1">
 
-<div th:if="${hasResults}">
-    <h2>Offers from Agencies</h2>
+            <label>Prix minimum</label>
+            <input type="number" name="minPrice" step="1" th:value="${minPrice}">
 
-    <div th:each="offer : ${offers}">
-        <p>
-            <!-- Agency name inferred from the package (.a1. vs .a2.) -->
-            Agency:
-            <span th:text="${#strings.contains(offer.class.name, '.a1.')
-                            ? 'Travel Express (A1)'
-                            : 'Voyage Plus (A2)'}"></span><br>
+            <label>Prix maximum</label>
+            <input type="number" name="maxPrice" step="1" th:value="${maxPrice}">
 
-            <!-- Adapt these fields if needed (must exist in AvailabilityOffer) -->
-            Offer ID: <span th:text="${offer.offerId}"></span><br>
-            Price: <span th:text="${offer.price}"></span>
-        </p>
+            <label>Nombre d'étoiles</label>
+            <input type="number" name="stars" min="1" max="5" th:value="${stars}">
 
-        <!-- Book goes automatically to the right agency -->
-        <a th:href="@{/reserve(
-                     offerId=${offer.offerId},
-                     agency=${#strings.contains(offer.class.name, '.a1.') ? 'A1' : 'A2'}
-                     )}">
-            Book
-        </a>
-
-        <hr>
+            <button type="submit">Rechercher</button>
+        </form>
     </div>
-</div>
 
+    <hr>
+
+    <div th:if="${hasResults}">
+        <h2 th:text="'Offres trouvées : ' + ${#lists.size(offers)}"></h2>
+
+        <!-- Carte par offre -->
+        <div th:each="offer : ${offers}" class="card">
+
+            <!-- Image -->
+            <div>
+                <img th:if="${offer.imageUrl != null}"
+                     th:src="@{${offer.imageUrl}}"
+                     th:alt="'Photo de ' + ${offer.hotelName}">
+                <div th:if="${offer.imageUrl == null}"
+                     style="width:260px;height:180px;background:#ddd;display:flex;align-items:center;justify-content:center;">
+                    <span>Pas d'image</span>
+                </div>
+            </div>
+
+            <!-- Corps -->
+            <div class="card-body">
+                <div class="card-header-line">
+                    <div>
+                        <div class="hotel-name" th:text="${offer.hotelName}">Nom de l'hôtel</div>
+                        <div class="agency-name">
+                            via <span th:text="${offer.agencyName}">Nom de l'agence</span>
+                        </div>
+                    </div>
+                    <div class="stars" th:if="${offer.stars > 0}">
+                        <span th:each="i : ${#numbers.sequence(1, offer.stars)}">★</span>
+                    </div>
+
+                </div>
+
+                <div class="room-line">
+                    <span th:text="${offer.roomType}">DOUBLE</span>
+                    •
+                    <span th:text="${offer.beds}">2</span> lit(s)
+                </div>
+
+                <div class="address-line"
+                     th:text="${offer.number + ' ' + offer.street + ', ' + offer.placeName + ', ' + offer.city + ', ' + offer.country}">
+                    Adresse complète
+                </div>
+
+                <div class="meta-line">
+                    Du <span th:text="${offer.startDate}">2025-12-01</span>
+                    au <span th:text="${offer.endDate}">2025-12-05</span>
+                </div>
+
+                <div class="meta-line">
+                    Agence ID :
+                    <span th:text="${offer.agencyId}">AGENCY1</span>
+                    • Offre :
+                    <span th:text="${offer.offerId}">H1-R1-...</span>
+                </div>
+            </div>
+
+            <!-- Colonne droite: prix + bouton -->
+            <div class="card-footer">
+                <div class="price-main">
+                    <span th:text="${#numbers.formatDecimal(offer.price, 0, 'COMMA', 2, 'POINT')}">475.20</span> €
+                </div>
+                <div style="font-size:0.9em;color:#666;">
+                    Prix total pour le séjour
+                </div>
+
+                <div class="reserve-link" style="margin-top:10px;">
+                    <!-- IMPORTANT: passer agencyId à /reserve -->
+                    <a th:href="@{/reserve(offerId=${offer.offerId}, agencyId=${offer.agencyId})}">
+                        Réserver via <span th:text="${offer.agencyName}">Agence</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 </body>
 </html>

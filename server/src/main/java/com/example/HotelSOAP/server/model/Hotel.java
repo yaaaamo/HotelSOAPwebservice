@@ -14,6 +14,9 @@ public class Hotel {
   private String name;
 
   private int stars;
+  private String imageUrl;
+
+
 
   @Embedded
   private Address address;
@@ -23,12 +26,16 @@ public class Hotel {
 
   public Hotel() {}
 
-  public Hotel(String id, String name, int stars, Address address) {
+  public Hotel(String id, String name, int stars, Address address,String imageUrl) {
     this.id = id;
     this.name = name;
     this.stars = stars;
     this.address = address;
+    this.imageUrl = imageUrl;
   }
+
+  public String getImageUrl() { return imageUrl; }
+  public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
   public String getId() {
     return id;

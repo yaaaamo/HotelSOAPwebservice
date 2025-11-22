@@ -118,11 +118,12 @@ public class HotelServiceImpl implements HotelService {
       o.setEnd(endISO);
       o.setPrice(total);
 
-      // 🔹 hotel info
       o.setHotelName(hotel.getName());
       o.setStars(hotel.getStars());
+      o.setImageUrl(hotel.getImageUrl());
 
-      // 🔹 address info from embedded Address
+
+
       Address addr = hotel.getAddress();
       if (addr != null) {
         o.setCountry(addr.getCountry());
