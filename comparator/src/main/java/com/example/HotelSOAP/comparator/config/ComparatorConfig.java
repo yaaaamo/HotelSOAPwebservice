@@ -1,12 +1,11 @@
 package com.example.HotelSOAP.comparator.config;
-import org.springframework.context.annotation.Configuration;
+
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Configuration pour initialiser les hôtels partenaires
- */
 @Configuration
 public class ComparatorConfig {
 
@@ -21,7 +20,6 @@ public class ComparatorConfig {
 
     return factory.getAgencyServiceImplPort();
   }
-
 
   @Bean(name = "a2Client")
   public com.example.HotelSOAP.comparator.clients.a2.AgencyService a2Client()
