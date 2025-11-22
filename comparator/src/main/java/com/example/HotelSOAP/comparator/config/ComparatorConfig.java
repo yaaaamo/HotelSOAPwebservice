@@ -27,7 +27,7 @@ public class ComparatorConfig {
 
     com.example.HotelSOAP.comparator.clients.a2.AgencyServiceImplService factory =
             new com.example.HotelSOAP.comparator.clients.a2.AgencyServiceImplService(
-                    new URL("http://localhost:9091/agencyservice?wsdl")
+                    new URL("http://localhost:9092/agencyservice?wsdl")
             );
 
     return factory.getAgencyServiceImplPort();

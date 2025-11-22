@@ -11,10 +11,15 @@ public interface AgencyService {
 
   @WebMethod
   List<AvailabilityOffer> searchAvailability(
+          @WebParam(name = "city") String city,
           @WebParam(name = "startDate") String startDate,
           @WebParam(name = "endDate") String endDate,
+          @WebParam(name = "minPrice") Double minPrice,
+          @WebParam(name = "maxPrice") Double maxPrice,
+          @WebParam(name = "stars") Integer stars,
           @WebParam(name = "persons") int persons
   );
+
 
   @WebMethod
   String makeReservation(

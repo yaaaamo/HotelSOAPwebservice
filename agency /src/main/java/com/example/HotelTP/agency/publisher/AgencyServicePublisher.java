@@ -2,7 +2,6 @@ package com.example.HotelTP.agency.publisher;
 
 import com.example.HotelTP.agency.service.AgencyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import javax.xml.ws.Endpoint;

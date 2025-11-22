@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservation Confirmation</title>
+</head>
+<body>
+
+<h1>Reservation Status</h1>
+
+<div th:if="${success}">
+    <h2 style="color:green">Reservation Confirmed!</h2>
+    <p>Confirmation Code: <span th:text="${confirmationCode}"></span></p>
+    <p>Name: <span th:text="${clientName}"></span></p>
+    <p>Email: <span th:text="${clientEmail}"></span></p>
+</div>
+
+<div th:if="${error}">
+    <h2 style="color:red">Error</h2>
+    <p th:text="${error}"></p>
+</div>
+
+<a href="/">Back to Home</a>
+
+</body>
+</html>
