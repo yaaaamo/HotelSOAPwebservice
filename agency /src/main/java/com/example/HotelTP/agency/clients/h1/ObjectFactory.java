@@ -26,6 +26,8 @@ public class ObjectFactory {
 
     private final static QName _Book_QNAME = new QName("http://hotel.example.com/soap", "book");
     private final static QName _BookResponse_QNAME = new QName("http://hotel.example.com/soap", "bookResponse");
+    private final static QName _LoginResponse_QNAME = new QName("http://hotel.example.com/soap", "loginResponse");
+    private final static QName _Login_QNAME = new QName("http://hotel.example.com/soap", "login");
     private final static QName _CheckAvailability_QNAME = new QName("http://hotel.example.com/soap", "checkAvailability");
     private final static QName _CheckAvailabilityResponse_QNAME = new QName("http://hotel.example.com/soap", "checkAvailabilityResponse");
 
@@ -34,6 +36,14 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link LoginResponse }
+     * 
+     */
+    public LoginResponse createLoginResponse() {
+        return new LoginResponse();
     }
 
     /**
@@ -69,6 +79,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Login }
+     * 
+     */
+    public Login createLogin() {
+        return new Login();
+    }
+
+    /**
      * Create an instance of {@link AvailabilityOffer }
      * 
      */
@@ -100,6 +118,24 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "bookResponse")
     public JAXBElement<BookResponse> createBookResponse(BookResponse value) {
         return new JAXBElement<BookResponse>(_BookResponse_QNAME, BookResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LoginResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "loginResponse")
+    public JAXBElement<LoginResponse> createLoginResponse(LoginResponse value) {
+        return new JAXBElement<LoginResponse>(_LoginResponse_QNAME, LoginResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Login }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://hotel.example.com/soap", name = "login")
+    public JAXBElement<Login> createLogin(Login value) {
+        return new JAXBElement<Login>(_Login_QNAME, Login.class, null, value);
     }
 
     /**

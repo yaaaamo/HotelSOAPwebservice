@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/server/pom.xml" />
         <option value="$PROJECT_DIR$/agency /pom.xml" />
+        <option value="$PROJECT_DIR$/comparator/pom.xml" />
       </list>
     </option>
   </component>

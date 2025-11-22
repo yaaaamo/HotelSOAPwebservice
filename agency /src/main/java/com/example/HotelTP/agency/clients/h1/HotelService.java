@@ -27,11 +27,9 @@ public interface HotelService {
 
     /**
      * 
-     * @param password
      * @param mainGuest
      * @param offerId
-     * @param agencyId
-     * @param login
+     * @param token
      * @return
      *     returns java.lang.String
      */
@@ -41,12 +39,8 @@ public interface HotelService {
     @ResponseWrapper(localName = "bookResponse", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h1.BookResponse")
     @Action(input = "http://hotel.example.com/soap/HotelService/bookRequest", output = "http://hotel.example.com/soap/HotelService/bookResponse")
     public String book(
-        @WebParam(name = "agencyId", targetNamespace = "")
-        String agencyId,
-        @WebParam(name = "login", targetNamespace = "")
-        String login,
-        @WebParam(name = "password", targetNamespace = "")
-        String password,
+        @WebParam(name = "token", targetNamespace = "")
+        String token,
         @WebParam(name = "offerId", targetNamespace = "")
         String offerId,
         @WebParam(name = "mainGuest", targetNamespace = "")
@@ -54,11 +48,28 @@ public interface HotelService {
 
     /**
      * 
+     * @param arg1
+     * @param arg0
+     * @return
+     *     returns java.lang.String
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "login", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h1.Login")
+    @ResponseWrapper(localName = "loginResponse", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h1.LoginResponse")
+    @Action(input = "http://hotel.example.com/soap/HotelService/loginRequest", output = "http://hotel.example.com/soap/HotelService/loginResponse")
+    public String login(
+        @WebParam(name = "arg0", targetNamespace = "")
+        String arg0,
+        @WebParam(name = "arg1", targetNamespace = "")
+        String arg1);
+
+    /**
+     * 
      * @param persons
-     * @param password
      * @param start
-     * @param agencyId
      * @param end
+     * @param token
      * @return
      *     returns java.util.List<com.example.HotelTP.agency.clients.h1.AvailabilityOffer>
      */
@@ -68,10 +79,8 @@ public interface HotelService {
     @ResponseWrapper(localName = "checkAvailabilityResponse", targetNamespace = "http://hotel.example.com/soap", className = "com.example.HotelTP.agency.clients.h1.CheckAvailabilityResponse")
     @Action(input = "http://hotel.example.com/soap/HotelService/checkAvailabilityRequest", output = "http://hotel.example.com/soap/HotelService/checkAvailabilityResponse")
     public List<AvailabilityOffer> checkAvailability(
-        @WebParam(name = "agencyId", targetNamespace = "")
-        String agencyId,
-        @WebParam(name = "password", targetNamespace = "")
-        String password,
+        @WebParam(name = "token", targetNamespace = "")
+        String token,
         @WebParam(name = "start", targetNamespace = "")
         String start,
         @WebParam(name = "end", targetNamespace = "")

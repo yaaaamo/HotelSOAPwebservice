@@ -16,9 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="agencyId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="login" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="password" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="token" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="offerId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="mainGuest" type="{http://hotel.example.com/soap}Client" minOccurs="0"/>
  *       &lt;/sequence>
@@ -31,90 +29,38 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "book", propOrder = {
-    "agencyId",
-    "login",
-    "password",
+    "token",
     "offerId",
     "mainGuest"
 })
 public class Book {
 
-    protected String agencyId;
-    protected String login;
-    protected String password;
+    protected String token;
     protected String offerId;
     protected Client mainGuest;
 
     /**
-     * Gets the value of the agencyId property.
+     * Gets the value of the token property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAgencyId() {
-        return agencyId;
+    public String getToken() {
+        return token;
     }
 
     /**
-     * Sets the value of the agencyId property.
+     * Sets the value of the token property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAgencyId(String value) {
-        this.agencyId = value;
-    }
-
-    /**
-     * Gets the value of the login property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLogin() {
-        return login;
-    }
-
-    /**
-     * Sets the value of the login property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLogin(String value) {
-        this.login = value;
-    }
-
-    /**
-     * Gets the value of the password property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Sets the value of the password property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPassword(String value) {
-        this.password = value;
+    public void setToken(String value) {
+        this.token = value;
     }
 
     /**

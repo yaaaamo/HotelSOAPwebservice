@@ -14,4 +14,6 @@ public interface AgencyRepository extends JpaRepository<Agency, String> {
 
   // Trouver toutes les agences partenaires d'un hôtel
   List<Agency>findByHotel(Hotel hotel);
+
+  Optional<Agency> findByAuthToken(String authToken);
 }

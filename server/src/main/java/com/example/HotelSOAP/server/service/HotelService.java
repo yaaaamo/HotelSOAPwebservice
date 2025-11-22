@@ -16,21 +16,22 @@ public interface HotelService {
   // Service web 1 : disponibilités par agence
   @WebMethod
   List<AvailabilityOffer> checkAvailability(
-          @WebParam(name="agencyId") String agencyId,
-          @WebParam(name="password") String password,
+          @WebParam(name="token") String token,
           @WebParam(name="start") String startISO,
           @WebParam(name="end") String endISO,
           @WebParam(name="persons") int persons
   );
 
 
+
   // Service web 2 : réservation via agence
   @WebMethod
   String book(
-          @WebParam(name="agencyId") String agencyId,
-          @WebParam(name="login")    String login,
-          @WebParam(name="password") String password,
+          @WebParam(name="token") String token,
           @WebParam(name="offerId")  String offerId,
           @WebParam(name="mainGuest") Client client
   );
+
+  @WebMethod
+  String login(String agencyId, String password);
 }
