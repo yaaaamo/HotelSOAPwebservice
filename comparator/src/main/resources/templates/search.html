@@ -4,117 +4,190 @@
     <meta charset="UTF-8">
     <title>Hotel Comparator - Résultats</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        :root {
+            --bg: #fdf2ff;
+            --card-bg: #fff7fb;
+            --primary: #ec4899;
+            --text-main: #374151;
+            --text-muted: #9ca3af;
+            --border: #f9a8d4;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: radial-gradient(circle at top, #f9a8d4 0, #fdf2ff 45%, #e0f2fe 100%);
+            color: var(--text-main);
+        }
+
         .container { max-width: 1100px; margin: 0 auto; }
 
         h1 { margin-bottom: 10px; }
+
         .search-form {
-            background: #fff;
+            background: var(--card-bg);
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 16px;
             margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow:
+                    0 12px 30px rgba(236,72,153,0.15),
+                    0 0 0 1px rgba(248,187,208,0.6);
+            border: 1px solid var(--border);
         }
-        .search-form label { display: block; margin: 6px 0 2px; }
+
+        .search-form label {
+            display: block;
+            margin: 6px 0 2px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
         .search-form input {
             width: 100%;
-            padding: 5px;
+            padding: 6px 8px;
             margin-bottom: 6px;
             box-sizing: border-box;
+            border-radius: 10px;
+            border: 1px solid #fecdd3;
+            background: white;
+            font-size: 0.9rem;
         }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px #fce7f3;
+        }
+
         .search-form button {
             margin-top: 8px;
             padding: 8px 16px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        .message { margin: 10px 0; }
-        .message.error { color: red; }
-        .message.info { color: orange; }
+        .message { margin: 10px 0; font-size: 0.9rem; }
+        .message.error { color: #b91c1c; }
+        .message.info { color: #a16207; }
 
         .card {
             display: flex;
-            border-radius: 10px;
+            border-radius: 16px;
             overflow: hidden;
-            background: #fff;
+            background: var(--card-bg);
             margin: 12px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            box-shadow:
+                    0 12px 28px rgba(236,72,153,0.16),
+                    0 0 0 1px rgba(248,187,208,0.6);
         }
+
         .card img {
             width: 260px;
             height: 180px;
             object-fit: cover;
         }
+
         .card-body {
             flex: 1;
             padding: 10px 15px;
         }
+
         .card-header-line {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .hotel-name {
             font-size: 1.1em;
-            font-weight: bold;
+            font-weight: 700;
         }
+
         .agency-name {
-            font-size: 0.95em;
-            color: #555;
+            font-size: 0.9em;
+            color: var(--text-muted);
         }
+
+        .base-price {
+            margin-top: 4px;
+            font-size: 0.85em;
+            color: var(--text-muted);
+        }
+
+        .base-price strong {
+            color: var(--text-main);
+        }
+
         .stars {
-            color: #ffcc00;
+            color: #facc15;
         }
+
         .card-footer {
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding: 10px 15px;
             min-width: 200px;
-            border-left: 1px solid #eee;
-            background: #f9fff7;
+            border-left: 1px solid #f9a8d4;
+            background: #fef2ff;
         }
+
         .price-main {
-            font-size: 1.4em;
-            font-weight: bold;
+            font-size: 1.35em;
+            font-weight: 700;
             margin-bottom: 6px;
+            color: #be185d;
         }
+
         .reserve-link a {
             display: inline-block;
             padding: 8px 14px;
-            border-radius: 6px;
+            border-radius: 999px;
             text-decoration: none;
-            background: #28a745;
-            color: #fff;
-            font-weight: bold;
+            background: linear-gradient(135deg, #ec4899, #f97316);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
         }
+
         .reserve-link a:hover {
-            background: #218838;
+            filter: brightness(1.07);
         }
+
         .room-line {
             margin-top: 4px;
-            color: #555;
+            color: #6b7280;
+            font-size: 0.9rem;
         }
+
         .address-line {
             margin-top: 4px;
-            font-size: 0.9em;
-            color: #666;
+            font-size: 0.85em;
+            color: var(--text-muted);
         }
+
         .meta-line {
-            font-size: 0.9em;
-            color: #666;
+            font-size: 0.85em;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
 <div class="container">
 
-    <h1>Comparer les offres d'hôtels</h1>
+    <h1>Comparer les offres d'hôtels 💕</h1>
 
-    <!-- Messages d'erreur / info -->
     <div th:if="${error}" class="message error" th:text="${error}"></div>
     <div th:if="${message}" class="message info" th:text="${message}"></div>
 
-    <!-- Formulaire de recherche -->
     <div class="search-form">
         <form action="/search" method="get">
             <label>Ville</label>
@@ -138,7 +211,7 @@
             <label>Nombre d'étoiles</label>
             <input type="number" name="stars" min="1" max="5" th:value="${stars}">
 
-            <button type="submit">Rechercher</button>
+            <button type="submit">Rechercher ✨</button>
         </form>
     </div>
 
@@ -147,21 +220,17 @@
     <div th:if="${hasResults}">
         <h2 th:text="'Offres trouvées : ' + ${#lists.size(offers)}"></h2>
 
-        <!-- Carte par offre -->
         <div th:each="offer : ${offers}" class="card">
-
-            <!-- Image -->
             <div>
                 <img th:if="${offer.imageUrl != null}"
                      th:src="@{${offer.imageUrl}}"
                      th:alt="'Photo de ' + ${offer.hotelName}">
                 <div th:if="${offer.imageUrl == null}"
-                     style="width:260px;height:180px;background:#ddd;display:flex;align-items:center;justify-content:center;">
+                     style="width:260px;height:180px;background:#fee2e2;display:flex;align-items:center;justify-content:center;">
                     <span>Pas d'image</span>
                 </div>
             </div>
 
-            <!-- Corps -->
             <div class="card-body">
                 <div class="card-header-line">
                     <div>
@@ -169,11 +238,16 @@
                         <div class="agency-name">
                             via <span th:text="${offer.agencyName}">Nom de l'agence</span>
                         </div>
+                        <div class="base-price">
+                            Prix hôtel :
+                            <strong th:text="${#numbers.formatDecimal(offer.basePrice, 0, 'COMMA', 2, 'POINT')} + ' €'">
+                                0,00 €
+                            </strong>
+                        </div>
                     </div>
                     <div class="stars" th:if="${offer.stars > 0}">
                         <span th:each="i : ${#numbers.sequence(1, offer.stars)}">★</span>
                     </div>
-
                 </div>
 
                 <div class="room-line">
@@ -200,17 +274,15 @@
                 </div>
             </div>
 
-            <!-- Colonne droite: prix + bouton -->
             <div class="card-footer">
                 <div class="price-main">
                     <span th:text="${#numbers.formatDecimal(offer.price, 0, 'COMMA', 2, 'POINT')}">475.20</span> €
                 </div>
-                <div style="font-size:0.9em;color:#666;">
+                <div style="font-size:0.9em;color:#9ca3af;">
                     Prix total pour le séjour
                 </div>
 
                 <div class="reserve-link" style="margin-top:10px;">
-                    <!-- IMPORTANT: passer agencyId à /reserve -->
                     <a th:href="@{/reserve(offerId=${offer.offerId}, agencyId=${offer.agencyId})}">
                         Réserver via <span th:text="${offer.agencyName}">Agence</span>
                     </a>

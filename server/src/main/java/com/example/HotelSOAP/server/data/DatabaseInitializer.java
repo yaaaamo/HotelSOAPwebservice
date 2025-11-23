@@ -20,7 +20,7 @@ public class DatabaseInitializer {
   @Bean
   CommandLineRunner initDatabase(HotelRepository hotelRepo,
                                  RoomRepository roomRepo,
-                                 AvailabilityWindowRepository winRepo,
+                                 AvailabilityOfferRepository offerRepo,
                                  AgencyRepository agencyRepo) {
     return args -> {
 
@@ -48,7 +48,6 @@ public class DatabaseInitializer {
       );
 
       String imageUrl;
-
       if (hotelId.equals("H1")) {
         imageUrl = "http://localhost:8081/images/h1.jpg";
       } else if (hotelId.equals("H2")) {
@@ -65,21 +64,49 @@ public class DatabaseInitializer {
       roomRepo.save(r1);
       roomRepo.save(r2);
 
-      winRepo.save(new AvailabilityWindow(
-              r1,
-              LocalDate.of(2025, 12, 1),
-              LocalDate.of(2025, 12, 10),
-              5
-      ));
-      winRepo.save(new AvailabilityWindow(
-              r2,
-              LocalDate.of(2025, 12, 1),
-              LocalDate.of(2025, 12, 5),
-              2
-      ));
+      // ==== AvailabilityOffer instead of AvailabilityWindow ====
+      AvailabilityOffer o1 = new AvailabilityOffer();
+      o1.setRoom(r1);
+      o1.setStart("2025-12-01");
+      o1.setEnd("2025-12-10");
+      o1.setUnits(5);
+      o1.setOfferId(hotelId + "-R1-2025-12-01-2025-12-10");
+      o1.setHotelName(hotelName);
+      o1.setStars(4);
+      o1.setImageUrl(imageUrl);
+      o1.setCountry(country);
+      o1.setCity(city);
+      o1.setStreet(street);
+      o1.setNumber(number);
+      o1.setPlaceName(placeName);
+      o1.setLatitude(latitude);
+      o1.setLongitude(longitude);
+      o1.setRoomType(RoomType.DOUBLE);
+      o1.setBeds(2);
+      // price can be recomputed in checkAvailability, so no need to set it here
+      offerRepo.save(o1);
 
-      // Créer des agences partenaires avec différents facteurs de réduction
+      AvailabilityOffer o2 = new AvailabilityOffer();
+      o2.setRoom(r2);
+      o2.setStart("2025-12-01");
+      o2.setEnd("2025-12-05");
+      o2.setUnits(2);
+      o2.setOfferId(hotelId + "-R2-2025-12-01-2025-12-05");
+      o2.setHotelName(hotelName);
+      o2.setStars(4);
+      o2.setImageUrl(imageUrl);
+      o2.setCountry(country);
+      o2.setCity(city);
+      o2.setStreet(street);
+      o2.setNumber(number);
+      o2.setPlaceName(placeName);
+      o2.setLatitude(latitude);
+      o2.setLongitude(longitude);
+      o2.setRoomType(RoomType.FAMILY);
+      o2.setBeds(4);
+      offerRepo.save(o2);
 
+      // ==== Agences partenaires ====
       Agency agency1 = new Agency(
               "AGENCY1",
               "agency1",
@@ -101,10 +128,11 @@ public class DatabaseInitializer {
       agencyRepo.save(agency1);
       agencyRepo.save(agency2);
 
-      logger.info("✅ H2 initialized with hotel {} ({}), rooms, availability, and {} agencies",
+      logger.info("✅ Hotel initialized with hotel {} ({}), rooms, availability, and {} agencies",
               hotelName, hotelId, agencyRepo.count());
     };
   }
+
 
   // Spring-managed SOAP service (needed for @Autowired in impl)
   @Bean

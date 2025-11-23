@@ -1,4 +1,5 @@
 package com.example.HotelSOAP.server.service;
+
 import com.example.HotelSOAP.server.model.*;
 import com.example.HotelSOAP.server.repository.*;
 
@@ -26,10 +27,14 @@ public class HotelServiceImpl implements HotelService {
   private RoomRepository roomRepository;
 
   @Autowired
-  private AvailabilityWindowRepository availabilityRepository;
+  private AgencyRepository agencyRepository;
 
   @Autowired
-  private AgencyRepository agencyRepository;
+  private AvailabilityOfferRepository offerRepository;
+
+  @Autowired
+  private ReservationRepository reservationRepository;
+
 
   // one hotel per server, like before
   private final String hotelId;
@@ -45,20 +50,12 @@ public class HotelServiceImpl implements HotelService {
             .orElseThrow(() -> new WebServiceException("Unknown hotel " + hotelId));
   }
 
-
-
   private static boolean covers(LocalDate winStart, LocalDate winEnd,
                                 LocalDate reqStart, LocalDate reqEnd) {
-    // cover if [winStart,winEnd) ⊇ [reqStart,reqEnd)
+
     return !winStart.isAfter(reqStart) && !winEnd.isBefore(reqEnd);
   }
 
-  private int unitsAvailableFor(Room room, LocalDate reqStart, LocalDate reqEnd) {
-    return availabilityRepository.findByRoom(room).stream()
-            .filter(w -> covers(w.getStart(), w.getEnd(), reqStart, reqEnd))
-            .mapToInt(AvailabilityWindow::getUnits)
-            .sum();
-  }
 
   private static int nightsBetween(String startISO, String endISO) {
     LocalDate s = LocalDate.parse(startISO);
@@ -66,7 +63,6 @@ public class HotelServiceImpl implements HotelService {
     int n = (int) ChronoUnit.DAYS.between(s, e);
     return Math.max(n, 1);
   }
-
 
   @Override
   public List<AvailabilityOffer> checkAvailability(
@@ -76,18 +72,24 @@ public class HotelServiceImpl implements HotelService {
     Agency agency = authenticateAndGetAgency(agencyId, password);
     double agencyFactor = agency.getDiscountFactor();
 
-    if (startISO == null || endISO == null)
+    if (startISO == null || endISO == null) {
       throw new WebServiceException("Missing dates");
+    }
 
-    LocalDate s, e;
+    LocalDate reqStart;
+    LocalDate reqEnd;
     try {
-      s = LocalDate.parse(startISO);
-      e = LocalDate.parse(endISO);
+      reqStart = LocalDate.parse(startISO);  // yyyy-MM-dd
+      reqEnd   = LocalDate.parse(endISO);
     } catch (Exception ex) {
       throw new WebServiceException("Bad date format. Use yyyy-MM-dd");
     }
 
-    int nights = nightsBetween(startISO, endISO);
+    if (!reqEnd.isAfter(reqStart)) {
+      throw new WebServiceException("endDate must be after startDate");
+    }
+
+
 
     Hotel hotel = currentHotel();
     List<Room> rooms = roomRepository.findByHotel(hotel);
@@ -95,60 +97,80 @@ public class HotelServiceImpl implements HotelService {
     List<AvailabilityOffer> out = new ArrayList<>();
 
     for (Room r : rooms) {
-      if (r.getBeds() < persons)
+      // 1) capacity
+      if (r.getBeds() < persons) {
+        System.out.println("[DEBUG] Skip room " + r.getId() +
+                " because beds=" + r.getBeds() + " < persons=" + persons);
         continue;
-
-      int left = unitsAvailableFor(r, s, e);
-      if (left <= 0)
-        continue;
-
-      double perNight = r.getPricePerNight()
-              * r.getType().factor()
-              * agencyFactor;
-
-      double total = perNight * nights;
-
-      AvailabilityOffer o = new AvailabilityOffer();
-      o.setOfferId(
-              hotel.getId() + "-" + r.getId() + "-" + startISO + "-" + endISO
-      );
-      o.setRoomType(r.getType());
-      o.setBeds(r.getBeds());
-      o.setStart(startISO);
-      o.setEnd(endISO);
-      o.setPrice(total);
-
-      o.setHotelName(hotel.getName());
-      o.setStars(hotel.getStars());
-      o.setImageUrl(hotel.getImageUrl());
-
-
-
-      Address addr = hotel.getAddress();
-      if (addr != null) {
-        o.setCountry(addr.getCountry());
-        o.setCity(addr.getCity());
-        o.setStreet(addr.getStreet());
-        o.setNumber(addr.getNumber());
-        o.setPlaceName(addr.getPlaceName());
-        o.setLatitude(addr.getLatitude());
-        o.setLongitude(addr.getLongitude());
       }
 
-      out.add(o);
+      // 2) get all availability windows (offers) for this room
+      List<AvailabilityOffer> offersForRoom = offerRepository.findByRoom(r);
+
+      for (AvailabilityOffer o : offersForRoom) {
+        LocalDate oStart = LocalDate.parse(o.getStart());
+        LocalDate oEnd   = LocalDate.parse(o.getEnd());
+
+        // 3) coverage check: [oStart, oEnd] must include [reqStart, reqEnd]
+        if (!covers(oStart, oEnd, reqStart, reqEnd)) {
+          System.out.println("[DEBUG] offer " + o.getOfferId() +
+                  " window " + oStart + " to " + oEnd +
+                  " DOES NOT cover " + reqStart + " to " + reqEnd);
+          continue;
+        }
+
+        // 4) stock
+        if (o.getUnits() <= 0) {
+          System.out.println("[DEBUG] offer " + o.getOfferId() +
+                  " has no units left");
+          continue;
+        }
+
+        int nights = nightsBetween(startISO, endISO);
+
+        double basePerNight = r.getPricePerNight() * r.getType().factor();
+        double baseTotal    = basePerNight * nights;
+
+// prix pour cette agence
+        double agencyPerNight = basePerNight * agencyFactor;
+        double total          = agencyPerNight * nights;
+
+        // 6) fill hotel info (in case not in DB)
+        o.setHotelName(hotel.getName());
+        o.setStars(hotel.getStars());
+        o.setImageUrl(hotel.getImageUrl());
+
+        o.setBasePrice(baseTotal); // prix hôtel
+        o.setPrice(total);
+
+        Address addr = hotel.getAddress();
+        if (addr != null) {
+          o.setCountry(addr.getCountry());
+          o.setCity(addr.getCity());
+          o.setStreet(addr.getStreet());
+          o.setNumber(addr.getNumber());
+          o.setPlaceName(addr.getPlaceName());
+          o.setLatitude(addr.getLatitude());
+          o.setLongitude(addr.getLongitude());
+        }
+
+        System.out.println("[DEBUG] offer " + o.getOfferId() +
+                " MATCHES for " + reqStart + " to " + reqEnd +
+                " persons=" + persons + " price=" + total);
+
+        out.add(o);
+      }
     }
 
+    System.out.println("[DEBUG] Total offers returned by hotel = " + out.size());
     return out;
   }
-
-
 
   @Override
   public String book(String agencyId, String password, String offerId, Client mainGuest) {
 
     if (offerId == null)
       throw new WebServiceException("Missing offerId");
-
 
     Agency agency = authenticateAndGetAgency(agencyId, password);
 
@@ -173,22 +195,69 @@ public class HotelServiceImpl implements HotelService {
     if (room == null || !room.getHotel().getId().equals(hotel.getId()))
       return "ERROR: Unknown room";
 
-    if (unitsAvailableFor(room, s, e) <= 0)
-      return "ERROR: No availability";
+    // Retrieve the exact offer we are booking
+    AvailabilityOffer offer = offerRepository.findByOfferId(offerId)
+            .orElse(null);
 
-    // Decrement room availability
-    List<AvailabilityWindow> wins = availabilityRepository.findByRoom(room);
-    for (AvailabilityWindow w : wins) {
-      if (covers(w.getStart(), w.getEnd(), s, e) && w.getUnits() > 0) {
-        w.setUnits(w.getUnits() - 1);
-        availabilityRepository.save(w);
-        break;
-      }
+    if (offer == null) {
+      return "ERROR: Offer not found";
     }
 
-    String clientName = (mainGuest != null ? mainGuest.getName() : "UNKNOWN");
+    // Check dates match / still valid
+    LocalDate oStart = LocalDate.parse(offer.getStart());
+    LocalDate oEnd   = LocalDate.parse(offer.getEnd());
+    if (!covers(oStart, oEnd, s, e)) {
+      return "ERROR: Offer no longer valid for these dates";
+    }
+
+    if (offer.getUnits() <= 0) {
+      return "ERROR: No availability";
+    }
+
+    // Decrement units for this offer
+    offer.setUnits(offer.getUnits() - 1);
+    offerRepository.save(offer);
+
+    // recompute price
+    int nights = nightsBetween(s.toString(), e.toString());
+    double perNight = room.getPricePerNight()
+            * room.getType().factor()
+            * agency.getDiscountFactor();
+    double total = perNight * nights;
+
+    String clientName  = (mainGuest != null ? mainGuest.getName()  : "UNKNOWN");
+    String clientEmail = (mainGuest != null ? mainGuest.getEmail() : null);
+    String clientPhone = (mainGuest != null ? mainGuest.getPhone() : null);
+
     String ref = "CONF-" + hotel.getId() + "-" + room.getId() + "-"
             + (1000 + new Random().nextInt(9000));
+
+    // Save Reservation entity (also used in SOAP)
+    Reservation res = new Reservation();
+    res.setConfirmationRef(ref);
+    res.setOfferId(offerId);
+
+    res.setHotelId(hotel.getId());
+    res.setHotelName(hotel.getName());
+    res.setCity(hotel.getAddress() != null ? hotel.getAddress().getCity() : null);
+    res.setCountry(hotel.getAddress() != null ? hotel.getAddress().getCountry() : null);
+
+    res.setAgencyId(agency.getAgencyId());
+    res.setAgencyName(agency.getName());
+
+    res.setRoomId(room.getId());
+    res.setRoomType(room.getType() != null ? room.getType().name() : null);
+    res.setBeds(room.getBeds());
+
+    res.setStartDate(s.toString());  // String yyyy-MM-dd
+    res.setEndDate(e.toString());
+    res.setTotalPrice(total);
+
+    res.setClientName(clientName);
+    res.setClientEmail(clientEmail);
+    res.setClientPhone(clientPhone);
+
+    reservationRepository.save(res);
 
     System.out.println(
             "✅ Booking confirmed for " + hotel.getName() +
@@ -199,6 +268,8 @@ public class HotelServiceImpl implements HotelService {
 
     return ref;
   }
+
+
 
   /**
    * Authentifie l'agence et retourne l'objet Agency
@@ -220,6 +291,17 @@ public class HotelServiceImpl implements HotelService {
 
     return agency;
   }
+
+  @Override
+  public List<Reservation> getReservationsForAgencys(String agencyId, String password) {
+
+    // reuse your existing auth
+    Agency agency = authenticateAndGetAgency(agencyId, password);
+
+    // now return only reservations made via THIS agency
+    return reservationRepository.findByAgencyIdOrderByCreatedAtDesc(agency.getAgencyId());
+  }
+
 
 
 

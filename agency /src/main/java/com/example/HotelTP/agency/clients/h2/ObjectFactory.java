@@ -24,16 +24,26 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _GetReservationsForAgencysResponse_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "getReservationsForAgencysResponse");
     private final static QName _BookResponse_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "bookResponse");
     private final static QName _Book_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "book");
     private final static QName _CheckAvailabilityResponse_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "checkAvailabilityResponse");
     private final static QName _CheckAvailability_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "checkAvailability");
+    private final static QName _GetReservationsForAgencys_QNAME = new QName("http://service.server.HotelSOAP.example.com/", "getReservationsForAgencys");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: com.example.HotelTP.agency.clients.h2
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link GetReservationsForAgencysResponse }
+     * 
+     */
+    public GetReservationsForAgencysResponse createGetReservationsForAgencysResponse() {
+        return new GetReservationsForAgencysResponse();
     }
 
     /**
@@ -69,6 +79,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetReservationsForAgencys }
+     * 
+     */
+    public GetReservationsForAgencys createGetReservationsForAgencys() {
+        return new GetReservationsForAgencys();
+    }
+
+    /**
+     * Create an instance of {@link Reservation }
+     * 
+     */
+    public Reservation createReservation() {
+        return new Reservation();
+    }
+
+    /**
      * Create an instance of {@link AvailabilityOffer }
      * 
      */
@@ -82,6 +108,15 @@ public class ObjectFactory {
      */
     public Client createClient() {
         return new Client();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetReservationsForAgencysResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.server.HotelSOAP.example.com/", name = "getReservationsForAgencysResponse")
+    public JAXBElement<GetReservationsForAgencysResponse> createGetReservationsForAgencysResponse(GetReservationsForAgencysResponse value) {
+        return new JAXBElement<GetReservationsForAgencysResponse>(_GetReservationsForAgencysResponse_QNAME, GetReservationsForAgencysResponse.class, null, value);
     }
 
     /**
@@ -118,6 +153,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://service.server.HotelSOAP.example.com/", name = "checkAvailability")
     public JAXBElement<CheckAvailability> createCheckAvailability(CheckAvailability value) {
         return new JAXBElement<CheckAvailability>(_CheckAvailability_QNAME, CheckAvailability.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetReservationsForAgencys }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.server.HotelSOAP.example.com/", name = "getReservationsForAgencys")
+    public JAXBElement<GetReservationsForAgencys> createGetReservationsForAgencys(GetReservationsForAgencys value) {
+        return new JAXBElement<GetReservationsForAgencys>(_GetReservationsForAgencys_QNAME, GetReservationsForAgencys.class, null, value);
     }
 
 }

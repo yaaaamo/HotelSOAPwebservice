@@ -24,6 +24,8 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _ListReservationsResponse_QNAME = new QName("http://service.agency.HotelTP.example.com/", "listReservationsResponse");
+    private final static QName _ListReservations_QNAME = new QName("http://service.agency.HotelTP.example.com/", "listReservations");
     private final static QName _SearchAvailability_QNAME = new QName("http://service.agency.HotelTP.example.com/", "searchAvailability");
     private final static QName _MakeReservation_QNAME = new QName("http://service.agency.HotelTP.example.com/", "makeReservation");
     private final static QName _MakeReservationResponse_QNAME = new QName("http://service.agency.HotelTP.example.com/", "makeReservationResponse");
@@ -53,6 +55,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ListReservations }
+     * 
+     */
+    public ListReservations createListReservations() {
+        return new ListReservations();
+    }
+
+    /**
+     * Create an instance of {@link ListReservationsResponse }
+     * 
+     */
+    public ListReservationsResponse createListReservationsResponse() {
+        return new ListReservationsResponse();
+    }
+
+    /**
      * Create an instance of {@link SearchAvailabilityResponse }
      * 
      */
@@ -69,11 +87,37 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Reservation }
+     * 
+     */
+    public Reservation createReservation() {
+        return new Reservation();
+    }
+
+    /**
      * Create an instance of {@link AvailabilityOffer }
      * 
      */
     public AvailabilityOffer createAvailabilityOffer() {
         return new AvailabilityOffer();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ListReservationsResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.agency.HotelTP.example.com/", name = "listReservationsResponse")
+    public JAXBElement<ListReservationsResponse> createListReservationsResponse(ListReservationsResponse value) {
+        return new JAXBElement<ListReservationsResponse>(_ListReservationsResponse_QNAME, ListReservationsResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ListReservations }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service.agency.HotelTP.example.com/", name = "listReservations")
+    public JAXBElement<ListReservations> createListReservations(ListReservations value) {
+        return new JAXBElement<ListReservations>(_ListReservations_QNAME, ListReservations.class, null, value);
     }
 
     /**

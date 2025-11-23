@@ -2,44 +2,180 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Hotel Comparator - Home</title>
+    <title>Hotel Comparator</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        label { display: block; margin: 8px 0 4px; }
-        input { width: 100%; padding: 6px; box-sizing: border-box; }
-        button { margin-top: 12px; padding: 8px 16px; }
+        :root {
+            --bg: #fdf2ff;
+            --card-bg: #fff7fb;
+            --primary: #ec4899;
+            --primary-soft: #fce7f3;
+            --text-main: #4b5563;
+            --text-muted: #9ca3af;
+            --border: #f9a8d4;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #f9a8d4 0, #fdf2ff 45%, #fefce8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 760px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+            gap: 24px;
+        }
+
+        .hero {
+            padding: 8px 6px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #fce7f3;
+            border: 1px solid #f9a8d4;
+            font-size: 0.78rem;
+            color: #9d174d;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            letter-spacing: 0.02em;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 18px 18px 16px;
+            border: 1px solid var(--border);
+            box-shadow:
+                    0 18px 36px rgba(236,72,153,0.18),
+                    0 0 0 1px rgba(248,187,208,0.6);
+        }
+
+        label {
+            display: block;
+            margin: 8px 0 4px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 7px 9px;
+            border-radius: 12px;
+            border: 1px solid #f9a8d4;
+            background: white;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary-soft);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        button {
+            margin-top: 14px;
+            width: 100%;
+            padding: 9px 14px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            filter: brightness(1.07);
+        }
+
+        @media (max-width: 780px) {
+            .container {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Hotel Comparator</h1>
-    <p>Compare les offres de nos agences partenaires.</p>
 
-    <form action="/search" method="get">
-        <label>Ville</label>
-        <input type="text" name="city" placeholder="Paris, Montpellier..." required>
+    <section class="hero">
 
-        <label>Date d'arrivée</label>
-        <input type="date" name="startDate" required>
+        <h1>Ton prochain séjour, au meilleur prix.</h1>
+        <p class="subtitle">
+            Choisis la ville, les dates, on te ramène les offres des agences partenaires.
+        </p>
+    </section>
 
-        <label>Date de départ</label>
-        <input type="date" name="endDate" required>
+    <section class="card">
+        <form action="/search" method="get">
+            <label>Ville</label>
+            <input type="text" name="city" placeholder="Paris, Montpellier..." required>
 
-        <label>Nombre de personnes</label>
-        <input type="number" name="persons" value="1" min="1">
+            <div class="grid-2">
+                <div>
+                    <label>Date d'arrivée</label>
+                    <input type="date" name="startDate" required>
+                </div>
+                <div>
+                    <label>Date de départ</label>
+                    <input type="date" name="endDate" required>
+                </div>
+            </div>
 
-        <label>Prix minimum</label>
-        <input type="number" name="minPrice" step="1">
+            <label>Nombre de personnes</label>
+            <input type="number" name="persons" value="1" min="1">
 
-        <label>Prix maximum</label>
-        <input type="number" name="maxPrice" step="1">
+            <div class="grid-2">
+                <div>
+                    <label>Prix minimum (€)</label>
+                    <input type="number" name="minPrice" step="1">
+                </div>
+                <div>
+                    <label>Prix maximum (€)</label>
+                    <input type="number" name="maxPrice" step="1">
+                </div>
+            </div>
 
-        <label>Nombre d'étoiles</label>
-        <input type="number" name="stars" min="1" max="5">
+            <label>Nombre d'étoiles</label>
+            <input type="number" name="stars" min="1" max="5">
 
-        <button type="submit">Rechercher</button>
-    </form>
+            <button type="submit">Voir les offres ✨</button>
+        </form>
+    </section>
+
 </div>
 </body>
 </html>

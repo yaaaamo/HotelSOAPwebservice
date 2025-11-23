@@ -65,6 +65,11 @@ public class ComparatorController {
           allOffers.addAll(offersA2);
         }
 
+        // 🔹 sort by price: cheapest → most expensive
+        allOffers.sort((o1, o2) ->
+                Double.compare(extractPrice(o1), extractPrice(o2))
+        );
+
         model.addAttribute("offers", allOffers);
         model.addAttribute("hasResults", true);
 
@@ -87,6 +92,18 @@ public class ComparatorController {
     model.addAttribute("persons", persons);
 
     return "search";
+  }
+
+  /**
+   * Helper: extract price from A1 or A2 AvailabilityOffer
+   */
+  private double extractPrice(Object o) {
+    if (o instanceof com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer) {
+      return ((com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer) o).getPrice();
+    } else if (o instanceof com.example.HotelSOAP.comparator.clients.a2.AvailabilityOffer) {
+      return ((com.example.HotelSOAP.comparator.clients.a2.AvailabilityOffer) o).getPrice();
+    }
+    return Double.MAX_VALUE; // fallback, should not happen
   }
 
   @GetMapping("/reserve")

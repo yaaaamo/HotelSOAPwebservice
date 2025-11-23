@@ -4,33 +4,164 @@
     <meta charset="UTF-8">
     <title>Confirmation de réservation</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .success { color: green; }
-        .error { color: red; }
+        :root {
+            --bg: #fdf2ff;
+            --card-bg: #fff7fb;
+            --primary: #ec4899;
+            --primary-soft: #fce7f3;
+            --success: #22c55e;
+            --error: #ef4444;
+            --text-main: #4b5563;
+            --text-muted: #9ca3af;
+            --border: #f9a8d4;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #f9a8d4 0, #fdf2ff 45%, #fefce8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: var(--text-main);
+        }
+
+        .container {
+            max-width: 520px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 22px 22px 20px;
+            border: 1px solid var(--border);
+            box-shadow:
+                    0 18px 40px rgba(236,72,153,0.18),
+                    0 0 0 1px rgba(248,187,208,0.6);
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h1 span.icon {
+            font-size: 1.4rem;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #fce7f3;
+            color: #9d174d;
+        }
+
+        .success,
+        .error {
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 8px;
+        }
+
+        .success {
+            background: #ecfdf3;
+            border: 1px solid #bbf7d0;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .success p:first-child,
+        .error p:first-child {
+            margin-top: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        p {
+            margin: 4px 0;
+            color: var(--text-muted);
+        }
+
+        strong { color: var(--text-main); }
+
+        .code-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: white;
+            border: 1px dashed #f9a8d4;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            color: #db2777;
+            text-decoration: none;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+        }
+
+        .back-link:hover {
+            background: #fecaca;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Confirmation</h1>
+    <h1>
+        <span class="icon">💌</span>
+        <span>Confirmation</span>
+        <span class="tag">Réservation envoyée</span>
+    </h1>
 
     <div th:if="${success}" class="success">
-        <p>Votre réservation a été confirmée ✅</p>
-        <p>Code de confirmation :
-            <strong th:text="${confirmationCode}">CONF-XXXX</strong>
+        <p>
+            <span>✨</span>
+            <span>Votre réservation a bien été confirmée.</span>
         </p>
         <p>
-            Au nom de :
+            Code de confirmation :
+            <span class="code-pill">
+                <span>🎀</span>
+                <strong th:text="${confirmationCode}">CONF-XXXX</strong>
+            </span>
+        </p>
+        <p>
+            Au nom de
             <strong th:text="${clientName}">Nom</strong>
             (<span th:text="${clientEmail}">email</span>)
         </p>
     </div>
 
     <div th:if="${error}" class="error">
+        <p>⚠️ Oups, quelque chose s’est mal passé.</p>
         <p th:text="${error}">Une erreur s'est produite.</p>
     </div>
 
-    <p><a href="/search">⟵ Retour à la recherche</a></p>
+    <a href="/search" class="back-link">
+        <span>←</span>
+        <span>Retour aux résultats</span>
+    </a>
 </div>
 </body>
 </html>

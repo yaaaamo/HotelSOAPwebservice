@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="agencyId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="agencyName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="basePrice" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="beds" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="city" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="country" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -47,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "availabilityOffer", propOrder = {
     "agencyId",
     "agencyName",
+    "basePrice",
     "beds",
     "city",
     "country",
@@ -69,6 +71,7 @@ public class AvailabilityOffer {
 
     protected String agencyId;
     protected String agencyName;
+    protected double basePrice;
     protected int beds;
     protected String city;
     protected String country;
@@ -133,6 +136,22 @@ public class AvailabilityOffer {
      */
     public void setAgencyName(String value) {
         this.agencyName = value;
+    }
+
+    /**
+     * Gets the value of the basePrice property.
+     * 
+     */
+    public double getBasePrice() {
+        return basePrice;
+    }
+
+    /**
+     * Sets the value of the basePrice property.
+     * 
+     */
+    public void setBasePrice(double value) {
+        this.basePrice = value;
     }
 
     /**

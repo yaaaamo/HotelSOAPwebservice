@@ -82,4 +82,16 @@ public interface AgencyService {
         @WebParam(name = "clientPhone", targetNamespace = "")
         String clientPhone);
 
+    /**
+     * 
+     * @return
+     *     returns java.util.List<com.example.HotelSOAP.comparator.clients.a2.Reservation>
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "listReservations", targetNamespace = "http://service.agency.HotelTP.example.com/", className = "com.example.HotelSOAP.comparator.clients.a2.ListReservations")
+    @ResponseWrapper(localName = "listReservationsResponse", targetNamespace = "http://service.agency.HotelTP.example.com/", className = "com.example.HotelSOAP.comparator.clients.a2.ListReservationsResponse")
+    @Action(input = "http://service.agency.HotelTP.example.com/AgencyService/listReservationsRequest", output = "http://service.agency.HotelTP.example.com/AgencyService/listReservationsResponse")
+    public List<Reservation> listReservations();
+
 }

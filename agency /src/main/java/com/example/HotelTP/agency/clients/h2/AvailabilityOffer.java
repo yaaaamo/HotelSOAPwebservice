@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="latitude" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="longitude" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="imageUrl" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="basePrice" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -58,7 +59,8 @@ import javax.xml.bind.annotation.XmlType;
     "placeName",
     "latitude",
     "longitude",
-    "imageUrl"
+    "imageUrl",
+    "basePrice"
 })
 public class AvailabilityOffer {
 
@@ -79,6 +81,7 @@ public class AvailabilityOffer {
     protected double latitude;
     protected double longitude;
     protected String imageUrl;
+    protected double basePrice;
 
     /**
      * Gets the value of the offerId property.
@@ -422,6 +425,22 @@ public class AvailabilityOffer {
      */
     public void setImageUrl(String value) {
         this.imageUrl = value;
+    }
+
+    /**
+     * Gets the value of the basePrice property.
+     * 
+     */
+    public double getBasePrice() {
+        return basePrice;
+    }
+
+    /**
+     * Sets the value of the basePrice property.
+     * 
+     */
+    public void setBasePrice(double value) {
+        this.basePrice = value;
     }
 
 }

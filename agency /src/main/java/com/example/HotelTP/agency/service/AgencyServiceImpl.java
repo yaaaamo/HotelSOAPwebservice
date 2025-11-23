@@ -76,6 +76,8 @@ public class AgencyServiceImpl implements AgencyService {
           mapped.setLongitude(o.getLongitude());
           mapped.setStars(o.getStars());
           mapped.setImageUrl(o.getImageUrl());
+          mapped.setPrice(o.getPrice());        // prix agence
+          mapped.setBasePrice(o.getBasePrice());
 
 
 
@@ -121,6 +123,9 @@ public class AgencyServiceImpl implements AgencyService {
           mapped.setLongitude(o.getLongitude());
           mapped.setStars(o.getStars());
           mapped.setImageUrl(o.getImageUrl());
+          mapped.setPrice(o.getPrice());        // prix agence
+          mapped.setBasePrice(o.getBasePrice());
+
 
 
 
@@ -194,34 +199,148 @@ public class AgencyServiceImpl implements AgencyService {
           Double maxPrice,
           Integer stars) {
 
+    System.out.println("[AGENCY DEBUG] Incoming offers before filter = " + offers.size());
+    System.out.println("[AGENCY DEBUG] city=" + city +
+            ", minPrice=" + minPrice +
+            ", maxPrice=" + maxPrice +
+            ", stars=" + stars);
+
     return offers.stream()
             .filter(offer -> {
               // Ville
-              if (city != null && !city.isEmpty()) {
+              if (city != null && !city.trim().isEmpty()) {
                 if (offer.getCity() == null ||
-                        !offer.getCity().toLowerCase().contains(city.toLowerCase())) {
+                        !offer.getCity().toLowerCase().contains(city.trim().toLowerCase())) {
+                  System.out.println("[AGENCY DEBUG] drop " + offer.getOfferId() +
+                          " because city='" + offer.getCity() + "' doesn't match filter='" + city + "'");
                   return false;
                 }
               }
 
               // Prix minimum
-              if (minPrice != null && offer.getPrice() < minPrice) {
-                return false;
+              if (minPrice != null) {
+                if (offer.getPrice() < minPrice) {
+                  System.out.println("[AGENCY DEBUG] drop " + offer.getOfferId() +
+                          " because price=" + offer.getPrice() + " < minPrice=" + minPrice);
+                  return false;
+                }
               }
 
               // Prix maximum
-              if (maxPrice != null && offer.getPrice() > maxPrice) {
-                return false;
+              if (maxPrice != null) {
+                if (offer.getPrice() > maxPrice) {
+                  System.out.println("[AGENCY DEBUG] drop " + offer.getOfferId() +
+                          " because price=" + offer.getPrice() + " > maxPrice=" + maxPrice);
+                  return false;
+                }
               }
 
               // Étoiles
-              if (stars != null && offer.getStars() != stars) {
-                return false;
+              if (stars != null) {
+                if (offer.getStars() != stars) {
+                  System.out.println("[AGENCY DEBUG] drop " + offer.getOfferId() +
+                          " because stars=" + offer.getStars() + " != filterStars=" + stars);
+                  return false;
+                }
               }
 
               return true;
             })
+            .peek(o -> System.out.println("[AGENCY DEBUG] KEEP " + o.getOfferId() +
+                    " city=" + o.getCity() +
+                    " price=" + o.getPrice() +
+                    " stars=" + o.getStars()))
             .collect(Collectors.toList());
   }
+
+  @Override
+  public List<com.example.HotelTP.agency.model.Reservation> listReservations() {
+
+    List<com.example.HotelTP.agency.model.Reservation> all = new ArrayList<>();
+
+    // ==== H1 ====
+    try {
+      List<com.example.HotelTP.agency.clients.h1.Reservation> resH1 =
+              h1Client.getReservationsForAgencys(agencyId, password);
+
+      if (resH1 != null) {
+        for (com.example.HotelTP.agency.clients.h1.Reservation r : resH1) {
+          com.example.HotelTP.agency.model.Reservation mapped =
+                  new com.example.HotelTP.agency.model.Reservation();
+
+          mapped.setConfirmationRef(r.getConfirmationRef());
+          mapped.setOfferId(r.getOfferId());
+
+          mapped.setHotelId(r.getHotelId());
+          mapped.setHotelName(r.getHotelName());
+          mapped.setCity(r.getCity());
+          mapped.setCountry(r.getCountry());
+
+          mapped.setAgencyId(r.getAgencyId());
+          mapped.setAgencyName(r.getAgencyName());
+
+          mapped.setRoomId(r.getRoomId());
+          mapped.setRoomType(r.getRoomType());
+          mapped.setBeds(r.getBeds());
+
+          mapped.setStartDate(r.getStartDate());
+          mapped.setEndDate(r.getEndDate());
+          mapped.setTotalPrice(r.getTotalPrice());
+
+          mapped.setClientName(r.getClientName());
+          mapped.setClientEmail(r.getClientEmail());
+          mapped.setClientPhone(r.getClientPhone());
+
+          all.add(mapped);
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("⚠️ Error fetching reservations from H1: " + e.getMessage());
+    }
+
+    // ==== H2 ====
+    try {
+      List<com.example.HotelTP.agency.clients.h2.Reservation> resH2 =
+              h2Client.getReservationsForAgencys(agencyId, password);
+
+      if (resH2 != null) {
+        for (com.example.HotelTP.agency.clients.h2.Reservation r : resH2) {
+          com.example.HotelTP.agency.model.Reservation mapped =
+                  new com.example.HotelTP.agency.model.Reservation();
+
+          mapped.setConfirmationRef(r.getConfirmationRef());
+          mapped.setOfferId(r.getOfferId());
+
+          mapped.setHotelId(r.getHotelId());
+          mapped.setHotelName(r.getHotelName());
+          mapped.setCity(r.getCity());
+          mapped.setCountry(r.getCountry());
+
+          mapped.setAgencyId(r.getAgencyId());
+          mapped.setAgencyName(r.getAgencyName());
+
+          mapped.setRoomId(r.getRoomId());
+          mapped.setRoomType(r.getRoomType());
+          mapped.setBeds(r.getBeds());
+
+          mapped.setStartDate(r.getStartDate());
+          mapped.setEndDate(r.getEndDate());
+          mapped.setTotalPrice(r.getTotalPrice());
+
+          mapped.setClientName(r.getClientName());
+          mapped.setClientEmail(r.getClientEmail());
+          mapped.setClientPhone(r.getClientPhone());
+
+          all.add(mapped);
+        }
+      }
+    } catch (Exception e) {
+      System.err.println("⚠️ Error fetching reservations from H2: " + e.getMessage());
+    }
+
+    return all;
+  }
+
+
 
 }

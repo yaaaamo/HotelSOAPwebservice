@@ -1,5 +1,6 @@
 package com.example.HotelTP.agency.service;
 import com.example.HotelTP.agency.model.AvailabilityOffer;
+import com.example.HotelTP.agency.model.Reservation;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -28,4 +29,8 @@ public interface AgencyService {
           @WebParam(name = "clientEmail") String clientEmail,
           @WebParam(name = "clientPhone") String clientPhone
   );
+
+  @WebMethod
+  List<Reservation> listReservations();
+
 }

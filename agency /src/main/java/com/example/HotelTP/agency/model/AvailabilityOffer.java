@@ -22,6 +22,11 @@ public class AvailabilityOffer {
   private double longitude;
   private int stars;
   private String imageUrl;
+  private double basePrice;
+
+  public double getBasePrice() { return basePrice; }
+  public void setBasePrice(double basePrice) { this.basePrice = basePrice; }
+
 
 
   public AvailabilityOffer() {}
