@@ -28,24 +28,6 @@ public interface HotelService {
     /**
      * 
      * @param password
-     * @param agencyId
-     * @return
-     *     returns java.util.List<com.example.HotelTP.agency.clients.h2.Reservation>
-     */
-    @WebMethod
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getReservationsForAgencys", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencys")
-    @ResponseWrapper(localName = "getReservationsForAgencysResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencysResponse")
-    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysResponse")
-    public List<Reservation> getReservationsForAgencys(
-        @WebParam(name = "agencyId", targetNamespace = "")
-        String agencyId,
-        @WebParam(name = "password", targetNamespace = "")
-        String password);
-
-    /**
-     * 
-     * @param password
      * @param offerId
      * @param client
      * @param agencyId
@@ -93,5 +75,23 @@ public interface HotelService {
         String endDate,
         @WebParam(name = "persons", targetNamespace = "")
         int persons);
+
+    /**
+     * 
+     * @param password
+     * @param agencyId
+     * @return
+     *     returns java.util.List<com.example.HotelTP.agency.clients.h2.Reservation>
+     */
+    @WebMethod
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getReservationsForAgencys", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencys")
+    @ResponseWrapper(localName = "getReservationsForAgencysResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencysResponse")
+    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysResponse")
+    public List<Reservation> getReservationsForAgencys(
+        @WebParam(name = "agencyId", targetNamespace = "")
+        String agencyId,
+        @WebParam(name = "password", targetNamespace = "")
+        String password);
 
 }

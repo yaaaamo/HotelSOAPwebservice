@@ -1,9 +1,7 @@
 package com.example.HotelSOAP.server.service;
-
 import com.example.HotelSOAP.server.model.AvailabilityOffer;
 import com.example.HotelSOAP.server.model.Client;
 import com.example.HotelSOAP.server.model.Reservation;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -34,5 +32,4 @@ public interface HotelService {
           @WebParam(name = "agencyId") String agencyId,
           @WebParam(name = "password") String password
   );
-
 }

@@ -46,39 +46,45 @@ public class ComparatorController {
           @RequestParam(required = false, defaultValue = "1") int persons,
           Model model) {
 
+    List<Object> allOffers = new ArrayList<>();
+
     if (city != null && startDate != null && endDate != null) {
+
+      // ===== AGENCY 1 =====
       try {
-        List<Object> allOffers = new ArrayList<>();
-
-        // appels SOAP vers A1
-        java.util.List<com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer> offersA1 =
+        List<com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer> offersA1 =
                 a1.searchAvailability(city, startDate, endDate, minPrice, maxPrice, stars, persons);
-
-        // appels SOAP vers A2
-        java.util.List<com.example.HotelSOAP.comparator.clients.a2.AvailabilityOffer> offersA2 =
-                a2.searchAvailability(city, startDate, endDate, minPrice, maxPrice, stars, persons);
-
         if (offersA1 != null) {
           allOffers.addAll(offersA1);
         }
+      } catch (Exception e) {
+        System.err.println("⚠️ Agence1 indisponible : " + e.getMessage());
+        model.addAttribute("warnAgence1", "L’agence 1 est momentanément indisponible.");
+      }
+
+      // ===== AGENCY 2 =====
+      try {
+        List<com.example.HotelSOAP.comparator.clients.a2.AvailabilityOffer> offersA2 =
+                a2.searchAvailability(city, startDate, endDate, minPrice, maxPrice, stars, persons);
         if (offersA2 != null) {
           allOffers.addAll(offersA2);
         }
-
-        // 🔹 sort by price: cheapest → most expensive
-        allOffers.sort((o1, o2) ->
-                Double.compare(extractPrice(o1), extractPrice(o2))
-        );
-
-        model.addAttribute("offers", allOffers);
-        model.addAttribute("hasResults", true);
-
-        if (allOffers.isEmpty()) {
-          model.addAttribute("message",
-                  "Aucune offre trouvée auprès des agences partenaires.");
-        }
       } catch (Exception e) {
-        model.addAttribute("error", "Erreur lors de la recherche: " + e.getMessage());
+        System.err.println("⚠️ A2 indisponible : " + e.getMessage());
+        model.addAttribute("warnA2", "L’agence 2 est momentanément indisponible.");
+      }
+
+      // 🔹 sort by price: cheapest → most expensive
+      allOffers.sort((o1, o2) ->
+              Double.compare(extractPrice(o1), extractPrice(o2))
+      );
+
+      model.addAttribute("offers", allOffers);
+      model.addAttribute("hasResults", true);
+
+      if (allOffers.isEmpty()) {
+        model.addAttribute("message",
+                "Aucune offre trouvée auprès des agences disponibles.");
       }
     }
 

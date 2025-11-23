@@ -133,10 +133,4 @@ public class DatabaseInitializer {
     };
   }
 
-
-  // Spring-managed SOAP service (needed for @Autowired in impl)
-  @Bean
-  public HotelService hotelService() {
-    return new HotelServiceImpl();
-  }
 }

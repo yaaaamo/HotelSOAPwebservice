@@ -14,36 +14,29 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@WebService(
-        endpointInterface = "com.example.HotelSOAP.server.service.HotelService"
-)
 @Service
+@WebService(
+        endpointInterface = "com.example.HotelSOAP.server.service.HotelService")
 public class HotelServiceImpl implements HotelService {
 
   @Autowired
   private HotelRepository hotelRepository;
-
   @Autowired
   private RoomRepository roomRepository;
-
   @Autowired
   private AgencyRepository agencyRepository;
-
   @Autowired
   private AvailabilityOfferRepository offerRepository;
-
   @Autowired
   private ReservationRepository reservationRepository;
 
 
-  // one hotel per server, like before
   private final String hotelId;
 
   public HotelServiceImpl() {
     this.hotelId = System.getProperty("hotel.id", "H1");
   }
 
-  /* ========== helpers ========== */
 
   private Hotel currentHotel() {
     return hotelRepository.findById(hotelId)
@@ -88,8 +81,6 @@ public class HotelServiceImpl implements HotelService {
     if (!reqEnd.isAfter(reqStart)) {
       throw new WebServiceException("endDate must be after startDate");
     }
-
-
 
     Hotel hotel = currentHotel();
     List<Room> rooms = roomRepository.findByHotel(hotel);
@@ -278,27 +269,20 @@ public class HotelServiceImpl implements HotelService {
     if (agencyId == null || password == null) {
       throw new WebServiceException("Missing credentials");
     }
-
     Agency agency = agencyRepository.findByAgencyIdAndPassword(agencyId, password)
             .orElseThrow(() -> new WebServiceException("Bad credentials"));
 
     if (!agency.getHotel().getId().equals(hotelId)) {
       throw new WebServiceException("Agency not partner of this hotel");
     }
-
     System.out.println("✅ Agency authenticated: " + agency.getName() +
             " (discount factor: " + agency.getDiscountFactor() + ")");
-
     return agency;
   }
 
   @Override
   public List<Reservation> getReservationsForAgencys(String agencyId, String password) {
-
-    // reuse your existing auth
     Agency agency = authenticateAndGetAgency(agencyId, password);
-
-    // now return only reservations made via THIS agency
     return reservationRepository.findByAgencyIdOrderByCreatedAtDesc(agency.getAgencyId());
   }
 
