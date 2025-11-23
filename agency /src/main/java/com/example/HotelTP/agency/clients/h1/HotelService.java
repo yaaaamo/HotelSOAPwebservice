@@ -28,26 +28,20 @@ public interface HotelService {
     /**
      * 
      * @param password
-     * @param offerId
-     * @param client
      * @param agencyId
      * @return
-     *     returns java.lang.String
+     *     returns java.util.List<com.example.HotelTP.agency.clients.h1.Reservation>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "book", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.Book")
-    @ResponseWrapper(localName = "bookResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.BookResponse")
-    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/bookRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/bookResponse")
-    public String book(
+    @RequestWrapper(localName = "getReservationsForAgencys", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.GetReservationsForAgencys")
+    @ResponseWrapper(localName = "getReservationsForAgencysResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.GetReservationsForAgencysResponse")
+    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysResponse")
+    public List<Reservation> getReservationsForAgencys(
         @WebParam(name = "agencyId", targetNamespace = "")
         String agencyId,
         @WebParam(name = "password", targetNamespace = "")
-        String password,
-        @WebParam(name = "offerId", targetNamespace = "")
-        String offerId,
-        @WebParam(name = "client", targetNamespace = "")
-        Client client);
+        String password);
 
     /**
      * 
@@ -79,19 +73,25 @@ public interface HotelService {
     /**
      * 
      * @param password
+     * @param offerId
+     * @param client
      * @param agencyId
      * @return
-     *     returns java.util.List<com.example.HotelTP.agency.clients.h1.Reservation>
+     *     returns java.lang.String
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getReservationsForAgencys", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.GetReservationsForAgencys")
-    @ResponseWrapper(localName = "getReservationsForAgencysResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.GetReservationsForAgencysResponse")
-    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysResponse")
-    public List<Reservation> getReservationsForAgencys(
+    @RequestWrapper(localName = "book", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.Book")
+    @ResponseWrapper(localName = "bookResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h1.BookResponse")
+    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/bookRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/bookResponse")
+    public String book(
         @WebParam(name = "agencyId", targetNamespace = "")
         String agencyId,
         @WebParam(name = "password", targetNamespace = "")
-        String password);
+        String password,
+        @WebParam(name = "offerId", targetNamespace = "")
+        String offerId,
+        @WebParam(name = "client", targetNamespace = "")
+        Client client);
 
 }

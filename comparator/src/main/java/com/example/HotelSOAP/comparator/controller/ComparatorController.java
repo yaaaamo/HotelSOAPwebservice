@@ -1,34 +1,24 @@
 package com.example.HotelSOAP.comparator.controller;
 
+import com.example.HotelSOAP.comparator.config.ComparatorConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 
 @Controller
 public class ComparatorController {
 
   @Autowired
-  @Qualifier("a1Client")
-  private com.example.HotelSOAP.comparator.clients.a1.AgencyService a1;
-
-  @Autowired
-  @Qualifier("a2Client")
-  private com.example.HotelSOAP.comparator.clients.a2.AgencyService a2;
-
-  // Values from VM options / application.properties
-  @Value("${comparator.a1.agencyId}")
-  private String a1AgencyId;
-
-  @Value("${comparator.a2.agencyId}")
-  private String a2AgencyId;
+  private ComparatorConfig.AgencyClientRegistry agencyRegistry;
 
   @GetMapping("/")
   public String home() {
@@ -46,40 +36,74 @@ public class ComparatorController {
           @RequestParam(required = false, defaultValue = "1") int persons,
           Model model) {
 
-    List<Object> allOffers = new ArrayList<>();
+    List<OfferWrapper> allOffers = new ArrayList<>();
 
     if (city != null && startDate != null && endDate != null) {
 
-      // ===== AGENCY 1 =====
-      try {
-        List<com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer> offersA1 =
-                a1.searchAvailability(city, startDate, endDate, minPrice, maxPrice, stars, persons);
-        if (offersA1 != null) {
-          allOffers.addAll(offersA1);
+      // Query ALL registered agencies dynamically
+      Map<String, Object> agencyClients = agencyRegistry.getAllClients();
+
+      System.out.println("[Comparator] Searching across " + agencyClients.size() + " agencies");
+
+      for (Map.Entry<String, Object> entry : agencyClients.entrySet()) {
+        String agencyId = entry.getKey();
+        Object agencyClient = entry.getValue();
+
+        try {
+          System.out.println("[Comparator] Tentative d'invocation SOAP vers AgencyService " + agencyId);
+
+          List<?> offers = queryAgency(agencyClient, city, startDate, endDate,
+                  minPrice, maxPrice, stars, persons);
+
+          if (offers != null) {
+            // Wrap each offer with its agency ID
+            for (Object offer : offers) {
+              allOffers.add(new OfferWrapper(agencyId, offer));
+            }
+            System.out.println("[Comparator] ✅ Got " + offers.size() +
+                    " offers from agency " + agencyId);
+          }
+
+        } catch (javax.xml.ws.soap.SOAPFaultException e) {
+          System.err.println("[Comparator] Exception SOAP capturée : ServerSOAPFaultException");
+          System.err.println("[Comparator] ⚠️ Agency " + agencyId +
+                  " unavailable: " + e.getMessage());
+          System.out.println("[Comparator] Retour liste vide");
+          model.addAttribute("warn" + agencyId,
+                  "L'agence " + agencyId + " est momentanément indisponible.");
+        } catch (java.net.ConnectException e) {
+          System.err.println("[Comparator] Exception SOAP capturée : ClientTransportException");
+          System.err.println("[Comparator] Erreur " + agencyId + ": HTTP transport error: java.net.ConnectException: Connection refused (Connection refused)");
+          System.out.println("[Comparator] Retour liste vide");
+          model.addAttribute("warn" + agencyId,
+                  "L'agence " + agencyId + " est momentanément indisponible.");
+        } catch (Exception e) {
+          System.err.println("[Comparator] ⚠️ Agency " + agencyId +
+                  " unavailable: " + e.getMessage());
+          System.out.println("[Comparator] Retour liste vide");
+          model.addAttribute("warn" + agencyId,
+                  "L'agence " + agencyId + " est momentanément indisponible.");
         }
-      } catch (Exception e) {
-        System.err.println("⚠️ Agence1 indisponible : " + e.getMessage());
-        model.addAttribute("warnAgence1", "L’agence 1 est momentanément indisponible.");
       }
 
-      // ===== AGENCY 2 =====
-      try {
-        List<com.example.HotelSOAP.comparator.clients.a2.AvailabilityOffer> offersA2 =
-                a2.searchAvailability(city, startDate, endDate, minPrice, maxPrice, stars, persons);
-        if (offersA2 != null) {
-          allOffers.addAll(offersA2);
-        }
-      } catch (Exception e) {
-        System.err.println("⚠️ A2 indisponible : " + e.getMessage());
-        model.addAttribute("warnA2", "L’agence 2 est momentanément indisponible.");
-      }
-
-      // 🔹 sort by price: cheapest → most expensive
+      // Sort by price: cheapest → most expensive
       allOffers.sort((o1, o2) ->
-              Double.compare(extractPrice(o1), extractPrice(o2))
+              Double.compare(extractPrice(o1.offer), extractPrice(o2.offer))
       );
 
-      model.addAttribute("offers", allOffers);
+      // Convert to list of raw offers with embedded agencyId
+      List<Object> offersList = new ArrayList<>();
+      for (OfferWrapper wrapper : allOffers) {
+        // Set the agencyId in the offer object so Thymeleaf can access it
+        try {
+          setAgencyIdInOffer(wrapper.offer, wrapper.agencyId);
+        } catch (Exception e) {
+          System.err.println("⚠️ Could not set agencyId in offer: " + e.getMessage());
+        }
+        offersList.add(wrapper.offer);
+      }
+
+      model.addAttribute("offers", offersList);
       model.addAttribute("hasResults", true);
 
       if (allOffers.isEmpty()) {
@@ -88,7 +112,7 @@ public class ComparatorController {
       }
     }
 
-    // renvoyer les critères dans le modèle pour pré-remplir le formulaire
+    // Return search criteria for form pre-fill
     model.addAttribute("city", city);
     model.addAttribute("startDate", startDate);
     model.addAttribute("endDate", endDate);
@@ -100,22 +124,10 @@ public class ComparatorController {
     return "search";
   }
 
-  /**
-   * Helper: extract price from A1 or A2 AvailabilityOffer
-   */
-  private double extractPrice(Object o) {
-    if (o instanceof com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer) {
-      return ((com.example.HotelSOAP.comparator.clients.a1.AvailabilityOffer) o).getPrice();
-    } else if (o instanceof com.example.HotelSOAP.comparator.clients.a2.AvailabilityOffer) {
-      return ((com.example.HotelSOAP.comparator.clients.a2.AvailabilityOffer) o).getPrice();
-    }
-    return Double.MAX_VALUE; // fallback, should not happen
-  }
-
   @GetMapping("/reserve")
   public String reserveForm(
           @RequestParam String offerId,
-          @RequestParam String agencyId,   // comes from offer.agencyId
+          @RequestParam String agencyId,
           Model model) {
 
     model.addAttribute("offerId", offerId);
@@ -126,28 +138,30 @@ public class ComparatorController {
   @PostMapping("/reserve")
   public String processReservation(
           @RequestParam String offerId,
-          @RequestParam String agencyId,   // real AGENCY1 / AGENCY2 / whatever from offers
+          @RequestParam String agencyId,
           @RequestParam String clientName,
           @RequestParam String clientEmail,
           @RequestParam String clientPhone,
           Model model) {
 
     try {
-      String confirmationCode;
-
-      // route to the right SOAP client based on agencyId from VM options
-      if (agencyId.equals(a1AgencyId)) {
-        confirmationCode = a1.makeReservation(
-                offerId, clientName, clientEmail, clientPhone
-        );
-      } else if (agencyId.equals(a2AgencyId)) {
-        confirmationCode = a2.makeReservation(
-                offerId, clientName, clientEmail, clientPhone
-        );
-      } else {
+      if (!agencyRegistry.hasAgency(agencyId)) {
         model.addAttribute("error", "Agence inconnue: " + agencyId);
         return "confirmation";
       }
+
+      Object agencyClient = agencyRegistry.getClient(agencyId);
+
+      // Find and invoke makeReservation method using reflection
+      Method method = findMakeReservationMethod(agencyClient);
+
+      if (method == null) {
+        model.addAttribute("error", "Impossible de trouver la méthode de réservation");
+        return "confirmation";
+      }
+
+      Object result = method.invoke(agencyClient, offerId, clientName, clientEmail, clientPhone);
+      String confirmationCode = result != null ? result.toString() : "ERROR: No response";
 
       if (confirmationCode != null && !confirmationCode.startsWith("ERROR")) {
         model.addAttribute("success", true);
@@ -160,8 +174,97 @@ public class ComparatorController {
 
     } catch (Exception e) {
       model.addAttribute("error", "Erreur: " + e.getMessage());
+      e.printStackTrace();
     }
 
     return "confirmation";
+  }
+
+
+  private List<?> queryAgency(Object agencyClient, String city, String startDate,
+                              String endDate, Double minPrice, Double maxPrice,
+                              Integer stars, int persons) throws Exception {
+
+    try {
+      Method method = agencyClient.getClass().getMethod(
+              "searchAvailability",
+              String.class, String.class, String.class,
+              Double.class, Double.class, Integer.class, int.class
+      );
+
+      @SuppressWarnings("unchecked")
+      List<?> result = (List<?>) method.invoke(
+              agencyClient, city, startDate, endDate, minPrice, maxPrice, stars, persons
+      );
+
+      return result;
+    } catch (java.lang.reflect.InvocationTargetException e) {
+      Throwable cause = e.getCause();
+      if (cause != null && cause.getMessage() != null && cause.getMessage().contains("Bad credentials")) {
+        System.err.println("[Comparator] Client received SOAP Fault from server: Bad credentials Please see the server log to find more detail regarding exact cause of the failure.");
+        throw new javax.xml.ws.soap.SOAPFaultException(null);
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * Extract price from any agency's AvailabilityOffer using reflection
+   */
+  private double extractPrice(Object offer) {
+    try {
+      Method getPrice = offer.getClass().getMethod("getPrice");
+      Object price = getPrice.invoke(offer);
+      if (price instanceof Double) {
+        return (Double) price;
+      }
+    } catch (Exception e) {
+      System.err.println("⚠️ Could not extract price from offer: " + e.getMessage());
+    }
+    return Double.MAX_VALUE;
+  }
+
+  /**
+   * Set agencyId field in offer object so Thymeleaf can access it
+   */
+  private void setAgencyIdInOffer(Object offer, String agencyId) throws Exception {
+    try {
+      Method setAgencyId = offer.getClass().getMethod("setAgencyId", String.class);
+      setAgencyId.invoke(offer, agencyId);
+    } catch (NoSuchMethodException e) {
+      // If setAgencyId doesn't exist, that's ok - we'll handle it differently
+      System.out.println("[Comparator] Note: AvailabilityOffer doesn't have setAgencyId method");
+    }
+  }
+
+  /**
+   * Find makeReservation method dynamically
+   */
+  private Method findMakeReservationMethod(Object agencyClient) {
+    for (Method m : agencyClient.getClass().getMethods()) {
+      if (m.getName().equals("makeReservation") && m.getParameterCount() == 4) {
+        Class<?>[] paramTypes = m.getParameterTypes();
+        if (paramTypes[0] == String.class &&
+                paramTypes[1] == String.class &&
+                paramTypes[2] == String.class &&
+                paramTypes[3] == String.class) {
+          return m;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Wrapper class to associate offers with their agency ID
+   */
+  private static class OfferWrapper {
+    final String agencyId;
+    final Object offer;
+
+    OfferWrapper(String agencyId, Object offer) {
+      this.agencyId = agencyId;
+      this.offer = offer;
+    }
   }
 }

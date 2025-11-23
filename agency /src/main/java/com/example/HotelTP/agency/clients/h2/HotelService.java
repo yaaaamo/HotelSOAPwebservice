@@ -27,21 +27,30 @@ public interface HotelService {
 
     /**
      * 
+     * @param persons
      * @param password
+     * @param endDate
      * @param agencyId
+     * @param startDate
      * @return
-     *     returns java.util.List<com.example.HotelTP.agency.clients.h2.Reservation>
+     *     returns java.util.List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getReservationsForAgencys", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencys")
-    @ResponseWrapper(localName = "getReservationsForAgencysResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencysResponse")
-    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysResponse")
-    public List<Reservation> getReservationsForAgencys(
+    @RequestWrapper(localName = "checkAvailability", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.CheckAvailability")
+    @ResponseWrapper(localName = "checkAvailabilityResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.CheckAvailabilityResponse")
+    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/checkAvailabilityRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/checkAvailabilityResponse")
+    public List<AvailabilityOffer> checkAvailability(
         @WebParam(name = "agencyId", targetNamespace = "")
         String agencyId,
         @WebParam(name = "password", targetNamespace = "")
-        String password);
+        String password,
+        @WebParam(name = "startDate", targetNamespace = "")
+        String startDate,
+        @WebParam(name = "endDate", targetNamespace = "")
+        String endDate,
+        @WebParam(name = "persons", targetNamespace = "")
+        int persons);
 
     /**
      * 
@@ -69,29 +78,20 @@ public interface HotelService {
 
     /**
      * 
-     * @param persons
      * @param password
-     * @param endDate
      * @param agencyId
-     * @param startDate
      * @return
-     *     returns java.util.List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer>
+     *     returns java.util.List<com.example.HotelTP.agency.clients.h2.Reservation>
      */
     @WebMethod
     @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "checkAvailability", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.CheckAvailability")
-    @ResponseWrapper(localName = "checkAvailabilityResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.CheckAvailabilityResponse")
-    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/checkAvailabilityRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/checkAvailabilityResponse")
-    public List<AvailabilityOffer> checkAvailability(
+    @RequestWrapper(localName = "getReservationsForAgencys", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencys")
+    @ResponseWrapper(localName = "getReservationsForAgencysResponse", targetNamespace = "http://service.server.HotelSOAP.example.com/", className = "com.example.HotelTP.agency.clients.h2.GetReservationsForAgencysResponse")
+    @Action(input = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysRequest", output = "http://service.server.HotelSOAP.example.com/HotelService/getReservationsForAgencysResponse")
+    public List<Reservation> getReservationsForAgencys(
         @WebParam(name = "agencyId", targetNamespace = "")
         String agencyId,
         @WebParam(name = "password", targetNamespace = "")
-        String password,
-        @WebParam(name = "startDate", targetNamespace = "")
-        String startDate,
-        @WebParam(name = "endDate", targetNamespace = "")
-        String endDate,
-        @WebParam(name = "persons", targetNamespace = "")
-        int persons);
+        String password);
 
 }
