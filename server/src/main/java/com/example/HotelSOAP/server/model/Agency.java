@@ -11,7 +11,7 @@ public class Agency {
   private String password;
   private String name;
 
-  // Facteur de réduction appliqué par l'hôtel pour cette agence
+
   private double discountFactor;
 
   @ManyToOne(optional = false)

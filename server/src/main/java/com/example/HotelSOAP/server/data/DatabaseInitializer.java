@@ -2,15 +2,11 @@ package com.example.HotelSOAP.server.data;
 
 import com.example.HotelSOAP.server.model.*;
 import com.example.HotelSOAP.server.repository.*;
-import com.example.HotelSOAP.server.service.HotelService;
-import com.example.HotelSOAP.server.service.HotelServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.time.LocalDate;
 
 @Configuration
 public class DatabaseInitializer {
@@ -64,7 +60,7 @@ public class DatabaseInitializer {
       roomRepo.save(r1);
       roomRepo.save(r2);
 
-      // ==== AvailabilityOffer instead of AvailabilityWindow ====
+
       AvailabilityOffer o1 = new AvailabilityOffer();
       o1.setRoom(r1);
       o1.setStart("2025-12-01");
@@ -83,7 +79,6 @@ public class DatabaseInitializer {
       o1.setLongitude(longitude);
       o1.setRoomType(RoomType.DOUBLE);
       o1.setBeds(2);
-      // price can be recomputed in checkAvailability, so no need to set it here
       offerRepo.save(o1);
 
       AvailabilityOffer o2 = new AvailabilityOffer();

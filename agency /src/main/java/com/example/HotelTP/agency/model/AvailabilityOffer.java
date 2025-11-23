@@ -155,7 +155,7 @@ public class AvailabilityOffer {
     this.longitude = longitude;
   }
 
-  // Méthode helper pour afficher les étoiles
+
   public String getStarsDisplay() {
     StringBuilder starsStr = new StringBuilder();
     for (int i = 0; i < stars; i++) {

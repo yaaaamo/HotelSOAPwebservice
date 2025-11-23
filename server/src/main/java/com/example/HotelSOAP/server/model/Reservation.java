@@ -12,7 +12,7 @@ public class Reservation {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @XmlTransient              // not exposed to SOAP
+  @XmlTransient
   private Long id;
 
   private String confirmationRef;
@@ -27,10 +27,9 @@ public class Reservation {
   private String agencyName;
 
   private String roomId;
-  private String roomType;   // use String for SOAP (e.g. DOUBLE, FAMILY)
+  private String roomType;
   private int beds;
 
-  // Use String for dates to keep JAXB simple (yyyy-MM-dd)
   private String startDate;
   private String endDate;
 
@@ -45,7 +44,7 @@ public class Reservation {
 
   public Reservation() {}
 
-  // ===== getters & setters =====
+
 
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }

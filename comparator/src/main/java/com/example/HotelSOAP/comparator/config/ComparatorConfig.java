@@ -12,10 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Dynamic agency partner configuration for Comparator
- * Allows unlimited agencies to be added via application.properties
- */
+
 @Configuration
 public class ComparatorConfig {
 
@@ -74,9 +71,7 @@ public class ComparatorConfig {
     }
   }
 
-  /**
-   * Registry that manages all agency SOAP clients dynamically
-   */
+
   public static class AgencyClientRegistry {
     private final Map<String, Object> agencyClients = new HashMap<>();
     private final Map<String, AgencyPartnersProperties.AgencyPartner> agencyConfigs = new HashMap<>();
@@ -100,7 +95,6 @@ public class ComparatorConfig {
         Service service = Service.create(wsdlUrl, serviceName);
         QName portName = new QName(partner.getNamespace(), partner.getPortName());
 
-        // Try explicit service interface first
         Class<?> serviceInterface = null;
 
         if (partner.getServiceInterface() != null && !partner.getServiceInterface().isEmpty()) {
@@ -113,7 +107,7 @@ public class ComparatorConfig {
         }
 
         if (serviceInterface == null) {
-          // Try to infer from standard package naming
+
           String packageName = "com.example.HotelSOAP.comparator.clients." + partner.getId().toLowerCase();
           String interfaceName = packageName + ".AgencyService";
           try {
@@ -125,7 +119,7 @@ public class ComparatorConfig {
           }
         }
 
-        // Get the port with the correct interface type
+
         Object port = service.getPort(portName, serviceInterface);
 
         agencyClients.put(partner.getId(), port);

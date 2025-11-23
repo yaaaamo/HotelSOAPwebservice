@@ -41,12 +41,12 @@ public class AgencyServiceImpl implements AgencyService {
 
     List<AvailabilityOffer> allOffers = new ArrayList<>();
 
-    // Get all registered hotels dynamically
+
     Map<String, Object> hotelClients = hotelRegistry.getAllClients();
 
     System.out.println("[Agency] Searching across " + hotelClients.size() + " hotel partners");
 
-    // Query each hotel in parallel (or sequentially)
+
     for (Map.Entry<String, Object> entry : hotelClients.entrySet()) {
       String hotelId = entry.getKey();
       Object hotelClient = entry.getValue();
@@ -66,16 +66,16 @@ public class AgencyServiceImpl implements AgencyService {
         System.err.println("[Agency] Exception SOAP capturée : ServerSOAPFaultException");
         System.err.println("[Agency] Erreur recherche " + hotelId + ": " + e.getMessage());
         System.out.println("[Agency] Retour liste vide au Comparateur");
-        // Continue with other hotels even if one fails
+
       } catch (java.net.ConnectException e) {
         System.err.println("[Agency] Exception SOAP capturée : ClientTransportException");
         System.err.println("[Agency] Erreur recherche " + hotelId + ": HTTP transport error: java.net.ConnectException: Connection refused");
         System.out.println("[Agency] Retour liste vide au Comparateur");
-        // Continue with other hotels even if one fails
+
       } catch (Exception e) {
         System.err.println("[Agency] ⚠️ Error querying " + hotelId + ": " + e.getMessage());
         System.out.println("[Agency] Retour liste vide au Comparateur");
-        // Continue with other hotels even if one fails
+
       }
     }
 
@@ -84,9 +84,7 @@ public class AgencyServiceImpl implements AgencyService {
     return filterOffers(allOffers, city, minPrice, maxPrice, stars);
   }
 
-  /**
-   * Query a single hotel using reflection to invoke the SOAP method dynamically
-   */
+
   private List<AvailabilityOffer> queryHotel(String hotelId, Object hotelClient,
                                              String startDate, String endDate, int persons)
           throws Exception {
@@ -94,7 +92,7 @@ public class AgencyServiceImpl implements AgencyService {
     List<AvailabilityOffer> offers = new ArrayList<>();
 
     try {
-      // Use reflection to invoke checkAvailability on any hotel client
+
       Method method = hotelClient.getClass().getMethod(
               "checkAvailability",
               String.class, String.class, String.class, String.class, int.class
@@ -125,20 +123,17 @@ public class AgencyServiceImpl implements AgencyService {
     return offers;
   }
 
-  /**
-   * Map a SOAP offer object to our internal model using reflection
-   * This works regardless of which hotel package the offer comes from
-   */
+
   private AvailabilityOffer mapOffer(String hotelId, Object rawOffer,
                                      String startDate, String endDate) {
     try {
       AvailabilityOffer mapped = new AvailabilityOffer();
 
-      // Use reflection to get values from the SOAP object
+
       mapped.setOfferId(getStringField(rawOffer, "offerId"));
       mapped.setHotelId(hotelId);
 
-      // Room type - handle enum
+
       Object roomTypeObj = getField(rawOffer, "roomType");
       if (roomTypeObj != null) {
         mapped.setRoomType(roomTypeObj.toString());
@@ -150,7 +145,7 @@ public class AgencyServiceImpl implements AgencyService {
       mapped.setStartDate(startDate);
       mapped.setEndDate(endDate);
 
-      // Hotel information
+
       mapped.setHotelName(getStringField(rawOffer, "hotelName"));
       mapped.setCountry(getStringField(rawOffer, "country"));
       mapped.setCity(getStringField(rawOffer, "city"));
@@ -162,7 +157,7 @@ public class AgencyServiceImpl implements AgencyService {
       mapped.setStars(getIntField(rawOffer, "stars"));
       mapped.setImageUrl(getStringField(rawOffer, "imageUrl"));
 
-      // Agency info
+
       mapped.setAgencyId(agencyId);
       mapped.setAgencyName(agencyName);
 
@@ -187,18 +182,17 @@ public class AgencyServiceImpl implements AgencyService {
     try {
       Object hotelClient = hotelRegistry.getClient(hotelId);
 
-      // Create client object dynamically based on hotel's package
+
       Object clientObj = createClientObject(hotelId, clientName, clientEmail, clientPhone);
 
       System.out.println("[Agency] Created client object of type: " + clientObj.getClass().getName());
 
-      // Find the book method - it takes 4 parameters
-      // We need to search for it since the Client parameter type varies by hotel
+
       Method bookMethod = null;
       for (Method m : hotelClient.getClass().getMethods()) {
         if (m.getName().equals("book") && m.getParameterCount() == 4) {
           Class<?>[] paramTypes = m.getParameterTypes();
-          // Check if parameters match: String, String, String, (any Client type)
+
           if (paramTypes[0] == String.class &&
                   paramTypes[1] == String.class &&
                   paramTypes[2] == String.class) {
@@ -264,30 +258,27 @@ public class AgencyServiceImpl implements AgencyService {
     return allReservations;
   }
 
-  // ========== Helper Methods ==========
 
   private String extractHotelIdFromOfferId(String offerId) {
     if (offerId == null) return null;
 
-    // Extract hotel ID from offerId format: "H1-R1-2025-01-01-2025-01-05"
+
     String[] parts = offerId.split("-");
     return parts.length > 0 ? parts[0] : null;
   }
 
-  /**
-   * Create a client object for the specific hotel's package
-   */
+
   private Object createClientObject(String hotelId, String name, String email, String phone)
           throws Exception {
 
-    // Dynamically load the Client class for this hotel
+
     String packageName = "com.example.HotelTP.agency.clients." + hotelId.toLowerCase();
     String className = packageName + ".Client";
 
     Class<?> clientClass = Class.forName(className);
     Object client = clientClass.getDeclaredConstructor().newInstance();
 
-    // Set fields using reflection
+
     setField(client, "name", name);
     setField(client, "email", email);
     setField(client, "phone", phone);
@@ -363,7 +354,7 @@ public class AgencyServiceImpl implements AgencyService {
             .collect(Collectors.toList());
   }
 
-  // ========== Reflection Utilities ==========
+
 
   private Object getField(Object obj, String fieldName) throws Exception {
     String methodName = "get" + capitalize(fieldName);
@@ -413,18 +404,18 @@ public class AgencyServiceImpl implements AgencyService {
 
     String methodName = "set" + capitalize(fieldName);
 
-    // Try to find the setter method - handle String specially
+
     Method method = null;
     try {
-      // First try with the exact type
+
       method = obj.getClass().getMethod(methodName, value.getClass());
     } catch (NoSuchMethodException e) {
-      // If that fails and value is a String, try with String.class explicitly
+
       if (value instanceof String) {
         try {
           method = obj.getClass().getMethod(methodName, String.class);
         } catch (NoSuchMethodException e2) {
-          // Last resort: search all methods for a matching setter
+
           for (Method m : obj.getClass().getMethods()) {
             if (m.getName().equals(methodName) && m.getParameterCount() == 1) {
               method = m;

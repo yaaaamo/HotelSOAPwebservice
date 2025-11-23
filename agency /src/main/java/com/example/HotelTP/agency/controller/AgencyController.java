@@ -99,9 +99,6 @@ public class AgencyController {
     return "confirmation";
   }
 
-  /**
-   * Display information about partner hotels
-   */
   @GetMapping("/hotels")
   public String listHotels(Model model) {
     model.addAttribute("message",

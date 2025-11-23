@@ -40,7 +40,7 @@ public class ComparatorController {
 
     if (city != null && startDate != null && endDate != null) {
 
-      // Query ALL registered agencies dynamically
+
       Map<String, Object> agencyClients = agencyRegistry.getAllClients();
 
       System.out.println("[Comparator] Searching across " + agencyClients.size() + " agencies");
@@ -56,7 +56,7 @@ public class ComparatorController {
                   minPrice, maxPrice, stars, persons);
 
           if (offers != null) {
-            // Wrap each offer with its agency ID
+
             for (Object offer : offers) {
               allOffers.add(new OfferWrapper(agencyId, offer));
             }
@@ -86,15 +86,15 @@ public class ComparatorController {
         }
       }
 
-      // Sort by price: cheapest → most expensive
+
       allOffers.sort((o1, o2) ->
               Double.compare(extractPrice(o1.offer), extractPrice(o2.offer))
       );
 
-      // Convert to list of raw offers with embedded agencyId
+
       List<Object> offersList = new ArrayList<>();
       for (OfferWrapper wrapper : allOffers) {
-        // Set the agencyId in the offer object so Thymeleaf can access it
+
         try {
           setAgencyIdInOffer(wrapper.offer, wrapper.agencyId);
         } catch (Exception e) {
@@ -112,7 +112,7 @@ public class ComparatorController {
       }
     }
 
-    // Return search criteria for form pre-fill
+
     model.addAttribute("city", city);
     model.addAttribute("startDate", startDate);
     model.addAttribute("endDate", endDate);
@@ -152,7 +152,7 @@ public class ComparatorController {
 
       Object agencyClient = agencyRegistry.getClient(agencyId);
 
-      // Find and invoke makeReservation method using reflection
+
       Method method = findMakeReservationMethod(agencyClient);
 
       if (method == null) {
@@ -208,9 +208,7 @@ public class ComparatorController {
     }
   }
 
-  /**
-   * Extract price from any agency's AvailabilityOffer using reflection
-   */
+
   private double extractPrice(Object offer) {
     try {
       Method getPrice = offer.getClass().getMethod("getPrice");
@@ -224,9 +222,7 @@ public class ComparatorController {
     return Double.MAX_VALUE;
   }
 
-  /**
-   * Set agencyId field in offer object so Thymeleaf can access it
-   */
+
   private void setAgencyIdInOffer(Object offer, String agencyId) throws Exception {
     try {
       Method setAgencyId = offer.getClass().getMethod("setAgencyId", String.class);
@@ -237,9 +233,7 @@ public class ComparatorController {
     }
   }
 
-  /**
-   * Find makeReservation method dynamically
-   */
+
   private Method findMakeReservationMethod(Object agencyClient) {
     for (Method m : agencyClient.getClass().getMethods()) {
       if (m.getName().equals("makeReservation") && m.getParameterCount() == 4) {
@@ -255,9 +249,6 @@ public class ComparatorController {
     return null;
   }
 
-  /**
-   * Wrapper class to associate offers with their agency ID
-   */
   private static class OfferWrapper {
     final String agencyId;
     final Object offer;

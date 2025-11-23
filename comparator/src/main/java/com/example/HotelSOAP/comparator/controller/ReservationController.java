@@ -13,10 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Dynamic Reservation Controller - works with unlimited agencies
- * No more hardcoded a1Client, a2Client!
- */
+
 @Controller
 public class ReservationController {
 
@@ -28,7 +25,7 @@ public class ReservationController {
 
     List<GlobalReservation> all = new ArrayList<>();
 
-    // Query ALL registered agencies dynamically
+
     Map<String, Object> agencyClients = agencyRegistry.getAllClients();
 
     System.out.println("[Comparator] Fetching reservations from " + agencyClients.size() + " agencies");
@@ -59,7 +56,7 @@ public class ReservationController {
       }
     }
 
-    // Sort: by agency, then hotel, then start date
+
     all.sort(Comparator
             .comparing(GlobalReservation::getAgencyName,
                     Comparator.nullsLast(String::compareTo))
@@ -69,14 +66,10 @@ public class ReservationController {
                     Comparator.nullsLast(String::compareTo)));
 
     model.addAttribute("reservations", all);
-    return "reservations"; // Thymeleaf template name
+    return "reservations";
   }
 
-  // ========== Helper Methods ==========
 
-  /**
-   * Query reservations from a single agency using reflection
-   */
   private List<?> queryReservations(Object agencyClient) throws Exception {
     Method method = agencyClient.getClass().getMethod("listReservations");
 
@@ -86,9 +79,7 @@ public class ReservationController {
     return result;
   }
 
-  /**
-   * Map a reservation object from any agency to GlobalReservation using reflection
-   */
+
   private GlobalReservation mapReservation(Object rawRes, String agencyId) {
     try {
       GlobalReservation g = new GlobalReservation();
@@ -103,7 +94,7 @@ public class ReservationController {
       g.setEndDate(getStringField(rawRes, "endDate"));
       g.setTotalPrice(getDoubleField(rawRes, "totalPrice"));
 
-      // If agencyName is null, use the agencyId
+
       if (g.getAgencyName() == null) {
         g.setAgencyName(agencyRegistry.getAgencyName(agencyId));
       }
@@ -116,9 +107,7 @@ public class ReservationController {
     }
   }
 
-  /**
-   * Get a String field from object using reflection
-   */
+
   private String getStringField(Object obj, String fieldName) {
     try {
       String methodName = "get" + capitalize(fieldName);
@@ -130,9 +119,7 @@ public class ReservationController {
     }
   }
 
-  /**
-   * Get a Double field from object using reflection
-   */
+
   private Double getDoubleField(Object obj, String fieldName) {
     try {
       String methodName = "get" + capitalize(fieldName);
@@ -149,9 +136,6 @@ public class ReservationController {
     }
   }
 
-  /**
-   * Capitalize first letter of string
-   */
   private String capitalize(String str) {
     if (str == null || str.isEmpty()) {
       return str;

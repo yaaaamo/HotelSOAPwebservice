@@ -9,10 +9,10 @@ import java.util.Optional;
 @Repository
 public interface AgencyRepository extends JpaRepository<Agency, String> {
 
-  // Trouver une agence par login et mot de passe pour authentification
+
   Optional<Agency>findByAgencyIdAndPassword(String agencyId, String password);
 
-  // Trouver toutes les agences partenaires d'un hôtel
+
   List<Agency>findByHotel(Hotel hotel);
 
 }

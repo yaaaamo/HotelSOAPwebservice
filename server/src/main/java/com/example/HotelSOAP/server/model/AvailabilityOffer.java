@@ -30,10 +30,10 @@ public class AvailabilityOffer {
   private int beds;
 
   @Column(name = "start_date")
-  private String start;   // yyyy-MM-dd
+  private String start;
 
   @Column(name = "end_date")
-  private String end;     // yyyy-MM-dd
+  private String end;
 
   private double price;
 
@@ -47,7 +47,7 @@ public class AvailabilityOffer {
   private double latitude;
   private double longitude;
   private String imageUrl;
-  private double basePrice;  // prix hôtel sans réduction d'agence
+  private double basePrice;
 
   public double getBasePrice() {
     return basePrice;
@@ -58,13 +58,13 @@ public class AvailabilityOffer {
   }
 
 
-  // units = stock for this period → server-side only
+
   @XmlTransient
   private int units;
 
   public AvailabilityOffer() {}
 
-  // getters/setters...
+
 
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }

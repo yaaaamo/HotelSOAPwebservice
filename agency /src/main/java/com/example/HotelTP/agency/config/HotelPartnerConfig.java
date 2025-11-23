@@ -12,10 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * IMPROVED VERSION - More explicit configuration
- * This version allows you to specify the exact service interface class in properties
- */
+
 @Configuration
 public class HotelPartnerConfig {
 
@@ -41,13 +38,13 @@ public class HotelPartnerConfig {
       private String id;
       private String name;
       private String wsdlUrl;
-      private String serviceInterface; // NEW: explicit interface class name
+      private String serviceInterface;
       private String namespace = "http://service.server.HotelSOAP.example.com/";
       private String serviceName = "HotelServiceImplService";
       private String portName = "HotelServiceImplPort";
       private boolean enabled = true;
 
-      // Getters and setters
+
       public String getId() { return id; }
       public void setId(String id) { this.id = id; }
 
@@ -74,9 +71,7 @@ public class HotelPartnerConfig {
     }
   }
 
-  /**
-   * Registry that manages all hotel SOAP clients dynamically
-   */
+
   public static class HotelClientRegistry {
     private final Map<String, Object> hotelClients = new HashMap<>();
     private final Map<String, HotelPartnersProperties.HotelPartner> hotelConfigs = new HashMap<>();
@@ -100,11 +95,11 @@ public class HotelPartnerConfig {
         Service service = Service.create(wsdlUrl, serviceName);
         QName portName = new QName(partner.getNamespace(), partner.getPortName());
 
-        // Try explicit service interface first
+
         Class<?> serviceInterface = null;
 
         if (partner.getServiceInterface() != null && !partner.getServiceInterface().isEmpty()) {
-          // Option 1: Use explicitly configured interface
+
           try {
             serviceInterface = Class.forName(partner.getServiceInterface());
             System.out.println("  Using explicit interface: " + partner.getServiceInterface());
@@ -114,7 +109,7 @@ public class HotelPartnerConfig {
         }
 
         if (serviceInterface == null) {
-          // Option 2: Try to infer from standard package naming
+
           String packageName = "com.example.HotelTP.agency.clients." + partner.getId().toLowerCase();
           String interfaceName = packageName + ".HotelService";
           try {
@@ -128,7 +123,7 @@ public class HotelPartnerConfig {
           }
         }
 
-        // Get the port with the correct interface type
+
         Object port = service.getPort(portName, serviceInterface);
 
         hotelClients.put(partner.getId(), port);
