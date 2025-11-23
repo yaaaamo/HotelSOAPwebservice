@@ -10,10 +10,6 @@ public class HotelServicePublisher implements CommandLineRunner {
   @Autowired
   private HotelService hotelService;
 
-  public HotelServicePublisher(HotelService hotelService) {
-    this.hotelService = hotelService;
-  }
-
   @Override
   public void run(String... args) throws Exception {
     //default 8080

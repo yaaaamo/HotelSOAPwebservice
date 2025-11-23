@@ -12,9 +12,6 @@ public class AgencyServicePublisher implements CommandLineRunner {
   @Autowired
   private AgencyService agencyService;
 
-  public AgencyServicePublisher(AgencyService agencyService) {
-    this.agencyService = agencyService;
-  }
 
   @Override
   public void run(String... args) throws Exception {

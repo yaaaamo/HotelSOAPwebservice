@@ -23,8 +23,6 @@ public class AgencyServiceImpl implements AgencyService {
   @Value("${agency.name}")
   private String agencyName;
 
-
-
   @Autowired
   @Qualifier("h1Client")
   private com.example.HotelTP.agency.clients.h1.HotelService h1Client;
@@ -48,6 +46,7 @@ public class AgencyServiceImpl implements AgencyService {
 
     // ===== H1 =====
     try {
+      System.out.println("[Agence1] Tentative d’invocation SOAP vers HotelService H1");
       List<com.example.HotelTP.agency.clients.h1.AvailabilityOffer> offersH1 =
               h1Client.checkAvailability(agencyId, password, startDate, endDate, persons);
 
@@ -91,11 +90,15 @@ public class AgencyServiceImpl implements AgencyService {
       }
 
     } catch (Exception e) {
-      System.err.println("⚠️ Erreur recherche H1: " + e.getMessage());
+      System.err.println(" Erreur recherche H1: " + e.getMessage());
+      System.out.println("[Agence1] Exception SOAP capturée : " + e.getClass().getSimpleName());
+      System.out.println("[Agence1] Retour liste vide au Comparateur");
     }
 
     // ===== H2 =====
     try {
+      System.out.println("[Agence1] Tentative d’invocation SOAP vers HotelService H2");
+
       List<com.example.HotelTP.agency.clients.h2.AvailabilityOffer> offersH2 =
               h2Client.checkAvailability(agencyId, password, startDate, endDate, persons);
 
@@ -138,6 +141,8 @@ public class AgencyServiceImpl implements AgencyService {
 
     } catch (Exception e) {
       System.err.println("⚠️ Erreur recherche H2: " + e.getMessage());
+      System.out.println("[Agence2] Exception SOAP capturée : " + e.getClass().getSimpleName());
+      System.out.println("[Agence2] Retour liste vide au Comparateur");
     }
 
     // if you want to debug:
